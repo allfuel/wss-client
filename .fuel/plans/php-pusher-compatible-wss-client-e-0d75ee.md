@@ -158,7 +158,7 @@ After this epic is complete, unpause Fuel tasks `f-280b86` and `f-f5abb9`.
 
 ## Acceptance Criteria
 
-- [ ] Library provides a hookable API: no internal infinite loop; `stream()` + `tick()` work with `stream_select()`.
+- [x] Library provides a hookable API: no internal infinite loop; `stream()` + `tick()` work with `stream_select()`.
 - [ ] Successful websocket handshake + message exchange with a Pusher-compatible server (wss.vask.dev OR local soketi fallback).
 - [ ] Channel subscription works; user can register listeners and receive events.
 - [ ] Presence channels work: subscription succeeded, member add/remove processed, member count exposed.
@@ -173,6 +173,7 @@ After this epic is complete, unpause Fuel tasks `f-280b86` and `f-f5abb9`.
 ## Progress Log
 
 - Iteration 1: added PSR-4 autoloading and a strict ClientConfig with validation, then smoke-tested autoload.
+- Iteration 2: added WebSocket client/handshake/frame parsing with hookable `stream()` + `tick()` and smoke-tested via local loop.
 
 ## Implementation Notes
 <!-- Tasks: append discoveries, decisions, gotchas here -->
