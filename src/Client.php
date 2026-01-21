@@ -181,6 +181,26 @@ final class Client
         $this->send(Frame::encodeText($payload));
     }
 
+    public function sendClientEvent(string $channel, string $eventName, array $payload): void
+    {
+        if (!str_starts_with($eventName, 'client-')) {
+            throw new InvalidArgumentException('Client events must start with "client-".');
+        }
+
+        if (!$this->requiresAuth($channel)) {
+            throw new InvalidArgumentException('Client events must target private or presence channels.');
+        }
+
+        $data = [
+            'event' => $eventName,
+            'channel' => $channel,
+            'data' => json_encode($payload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES),
+        ];
+
+        $json = json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
+        $this->sendText($json);
+    }
+
     public function tick(?float $now = null): void
     {
         if ($this->stream === null) {
