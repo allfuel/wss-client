@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$repo_root"
+
+if [ -x "vendor/bin/pint" ]; then
+  vendor/bin/pint
+fi
+
+if [ -x "vendor/bin/phpstan" ]; then
+  vendor/bin/phpstan analyse
+fi
+
+if [ -x "vendor/bin/pest" ]; then
+  vendor/bin/pest
+fi
