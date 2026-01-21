@@ -30,6 +30,12 @@ final class Client
 
     private ?string $socketId = null;
 
+    private bool $allowReconnect = true;
+
+    private ?float $nextReconnectAt = null;
+
+    private float $reconnectDelay = 0.0;
+
     /** @var array<string, PresenceState> */
     private array $presenceStates = [];
 
@@ -45,6 +51,12 @@ final class Client
         if ($this->stream !== null) {
             return;
         }
+
+        $this->closing = false;
+        $this->allowReconnect = true;
+        $this->socketId = null;
+        $this->presenceStates = [];
+        $this->parser = new Parser;
 
         $scheme = $this->config->useTls ? 'tls' : 'tcp';
         $uri = sprintf('%s://%s:%d', $scheme, $this->config->host, $this->config->port);
@@ -124,7 +136,14 @@ final class Client
         stream_set_blocking($stream, false);
         $this->stream = $stream;
         $this->lastPingAt = microtime(true);
+        $this->nextReconnectAt = null;
+        $this->reconnectDelay = 0.0;
         $this->emitter->emit('open');
+    }
+
+    public function isConnected(): bool
+    {
+        return $this->stream !== null;
     }
 
     /** @return resource|null */
@@ -160,6 +179,8 @@ final class Client
      */
     public function subscribe(string $channel, array $options = []): void
     {
+        $this->assertConnected('subscribe');
+
         if ($channel === '') {
             throw new InvalidArgumentException('Channel name must not be empty.');
         }
@@ -188,6 +209,7 @@ final class Client
 
     public function sendText(string $payload): void
     {
+        $this->assertConnected('send a message');
         $this->send(Frame::encodeText($payload));
     }
 
@@ -196,6 +218,8 @@ final class Client
      */
     public function sendClientEvent(string $channel, string $eventName, array $payload): void
     {
+        $this->assertConnected('send a client event');
+
         if (! str_starts_with($eventName, 'client-')) {
             throw new InvalidArgumentException('Client events must start with "client-".');
         }
@@ -216,16 +240,19 @@ final class Client
 
     public function tick(?float $now = null): void
     {
+        $now = $now ?? microtime(true);
+
         if ($this->stream === null) {
+            $this->attemptReconnect($now);
+
             return;
         }
 
-        $now = $now ?? microtime(true);
         $this->handlePing($now);
 
         $data = stream_get_contents($this->stream);
         if ($data === false) {
-            $this->emitter->emit('error', new RuntimeException('Failed to read from socket.'));
+            $this->handleDisconnect(new RuntimeException('Failed to read from socket.'), $now);
 
             return;
         }
@@ -245,12 +272,16 @@ final class Client
         }
 
         if (feof($this->stream)) {
-            $this->close();
+            $this->handleDisconnect(null, $now);
         }
     }
 
     public function close(): void
     {
+        $this->allowReconnect = false;
+        $this->nextReconnectAt = null;
+        $this->reconnectDelay = 0.0;
+
         if ($this->stream === null) {
             return;
         }
@@ -260,9 +291,11 @@ final class Client
             $this->send(Frame::encodeClose());
         }
 
-        fclose($this->stream);
-        $this->stream = null;
-        $this->emitter->emit('close');
+        if ($this->stream === null) {
+            return;
+        }
+
+        $this->handleDisconnect(null, microtime(true));
     }
 
     private function handlePing(float $now): void
@@ -297,7 +330,7 @@ final class Client
                     $this->closing = true;
                     $this->send(Frame::encodeClose());
                 }
-                $this->close();
+                $this->handleDisconnect(null, microtime(true));
                 break;
             default:
                 $this->emitter->emit('error', new RuntimeException('Unhandled opcode received.'));
@@ -313,7 +346,7 @@ final class Client
 
         $written = fwrite($this->stream, $frame);
         if ($written === false) {
-            $this->emitter->emit('error', new RuntimeException('Failed to write to socket.'));
+            $this->handleDisconnect(new RuntimeException('Failed to write to socket.'), microtime(true));
         }
     }
 
@@ -394,7 +427,7 @@ final class Client
         }
 
         if ($this->socketId === null) {
-            throw new RuntimeException('Socket ID is required before subscribing to private channels.');
+            throw new RuntimeException('Socket ID is required before subscribing to private channels. Wait for the pusher:connection_established event.');
         }
 
         $encodedChannelData = null;
@@ -416,5 +449,75 @@ final class Client
         }
 
         throw new InvalidArgumentException('Channel data must be a string or array.');
+    }
+
+    private function assertConnected(string $action): void
+    {
+        if ($this->stream === null) {
+            throw new RuntimeException(sprintf('Cannot %s before connect().', $action));
+        }
+    }
+
+    private function handleDisconnect(?\Throwable $error, float $now): void
+    {
+        if ($this->stream === null) {
+            if ($error !== null) {
+                $this->emitter->emit('error', $error);
+            }
+
+            return;
+        }
+
+        if ($error !== null) {
+            $this->emitter->emit('error', $error);
+        }
+
+        fclose($this->stream);
+        $this->stream = null;
+
+        $this->closing = false;
+        $this->socketId = null;
+        $this->presenceStates = [];
+        $this->emitter->emit('close');
+
+        if ($this->allowReconnect && $this->config->autoReconnect) {
+            $this->scheduleReconnect($now);
+        }
+    }
+
+    private function scheduleReconnect(float $now): void
+    {
+        if ($this->reconnectDelay <= 0.0) {
+            $this->reconnectDelay = $this->config->reconnectIntervalSeconds;
+        } else {
+            $this->reconnectDelay = min(
+                $this->reconnectDelay * 2,
+                $this->config->maxReconnectIntervalSeconds
+            );
+        }
+
+        $this->nextReconnectAt = $now + $this->reconnectDelay;
+        $this->emitter->emit('reconnect_scheduled', $this->reconnectDelay, $this->nextReconnectAt);
+    }
+
+    private function attemptReconnect(float $now): void
+    {
+        if (! $this->allowReconnect || ! $this->config->autoReconnect || $this->nextReconnectAt === null) {
+            return;
+        }
+
+        if ($now < $this->nextReconnectAt) {
+            return;
+        }
+
+        $this->emitter->emit('reconnecting', $this->reconnectDelay);
+
+        try {
+            $this->connect();
+            $this->emitter->emit('reconnected');
+        } catch (\Throwable $error) {
+            $this->scheduleReconnect($now);
+            $this->emitter->emit('reconnect_failed', $error);
+        }
     }
 }

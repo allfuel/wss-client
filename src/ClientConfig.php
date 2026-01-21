@@ -28,6 +28,12 @@ final class ClientConfig
 
     public readonly bool $tlsVerifyPeer;
 
+    public readonly bool $autoReconnect;
+
+    public readonly float $reconnectIntervalSeconds;
+
+    public readonly float $maxReconnectIntervalSeconds;
+
     public function __construct(
         string $host,
         int $port,
@@ -38,7 +44,10 @@ final class ClientConfig
         float $timeoutSeconds = 10.0,
         float $pingIntervalSeconds = 30.0,
         bool $tlsVerifyPeer = true,
-        ?string $subprotocol = null
+        ?string $subprotocol = null,
+        bool $autoReconnect = true,
+        float $reconnectIntervalSeconds = 1.0,
+        float $maxReconnectIntervalSeconds = 30.0
     ) {
         if ($host === '') {
             throw new InvalidArgumentException('Host must not be empty.');
@@ -73,6 +82,18 @@ final class ClientConfig
             throw new InvalidArgumentException('Subprotocol must not be empty when provided.');
         }
 
+        if ($reconnectIntervalSeconds <= 0.0) {
+            throw new InvalidArgumentException('Reconnect interval must be greater than zero.');
+        }
+
+        if ($maxReconnectIntervalSeconds <= 0.0) {
+            throw new InvalidArgumentException('Max reconnect interval must be greater than zero.');
+        }
+
+        if ($maxReconnectIntervalSeconds < $reconnectIntervalSeconds) {
+            throw new InvalidArgumentException('Max reconnect interval must be greater than or equal to reconnect interval.');
+        }
+
         $this->host = $host;
         $this->port = $port;
         $this->useTls = $useTls;
@@ -83,5 +104,8 @@ final class ClientConfig
         $this->pingIntervalSeconds = $pingIntervalSeconds;
         $this->tlsVerifyPeer = $tlsVerifyPeer;
         $this->subprotocol = $subprotocol;
+        $this->autoReconnect = $autoReconnect;
+        $this->reconnectIntervalSeconds = $reconnectIntervalSeconds;
+        $this->maxReconnectIntervalSeconds = $maxReconnectIntervalSeconds;
     }
 }

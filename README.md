@@ -13,6 +13,38 @@ php examples/connect_and_listen.php
 The examples default to the public demo server at `wss.vask.dev`. Override settings with environment
 variables if you want to point at a local Soketi instance.
 
+Fuel\Wss does not own an event loop. Use `stream_select()` (or your own loop) and call `tick()` to
+drive IO and timers.
+
+```php
+$client->connect();
+
+$stream = $client->stream();
+while (true) {
+    $read = $stream === null ? [] : [$stream];
+    $write = null;
+    $except = null;
+
+    if ($stream !== null) {
+        stream_select($read, $write, $except, 0, 200000);
+    }
+
+    $client->tick();
+}
+```
+
+### Events
+
+- `open`: websocket handshake finished
+- `message`: raw JSON string
+- `pusher:*`: decoded Pusher events
+- `error`: \Throwable instance
+- `close`: socket closed
+- `reconnect_scheduled`: `(float $delay, float $at)`
+- `reconnecting`: `(float $delay)`
+- `reconnected`: reconnect succeeded
+- `reconnect_failed`: \Throwable instance
+
 ### Environment Variables
 
 - `FUEL_WSS_HOST` (default `wss.vask.dev`)
@@ -26,6 +58,23 @@ variables if you want to point at a local Soketi instance.
 - `FUEL_WSS_EVENT` (default `client-fuel-test`)
 - `FUEL_WSS_DURATION` (default `20` seconds)
 - `FUEL_WSS_USER_ID` and `FUEL_WSS_USER_NAME` (presence demos only)
+
+### Reconnects
+
+Auto reconnect is enabled by default. Configure it via `ClientConfig`:
+
+```php
+$config = new ClientConfig(
+    host: $host,
+    port: $port,
+    useTls: $useTls,
+    appKey: $appKey,
+    appSecret: $appSecret,
+    autoReconnect: true,
+    reconnectIntervalSeconds: 1.0,
+    maxReconnectIntervalSeconds: 30.0,
+);
+```
 
 ### Examples
 
