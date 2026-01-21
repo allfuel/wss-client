@@ -7,10 +7,15 @@ namespace Fuel\Wss\WebSocket;
 final class Frame
 {
     public const OPCODE_CONTINUATION = 0x0;
+
     public const OPCODE_TEXT = 0x1;
+
     public const OPCODE_BINARY = 0x2;
+
     public const OPCODE_CLOSE = 0x8;
+
     public const OPCODE_PING = 0x9;
+
     public const OPCODE_PONG = 0xA;
 
     public static function encodeText(string $payload): string
@@ -44,13 +49,13 @@ final class Frame
         if ($length <= 125) {
             $header .= chr($maskBit | $length);
         } elseif ($length <= 65535) {
-            $header .= chr($maskBit | 126) . pack('n', $length);
+            $header .= chr($maskBit | 126).pack('n', $length);
         } else {
-            $header .= chr($maskBit | 127) . pack('N2', ($length >> 32) & 0xFFFFFFFF, $length & 0xFFFFFFFF);
+            $header .= chr($maskBit | 127).pack('N2', ($length >> 32) & 0xFFFFFFFF, $length & 0xFFFFFFFF);
         }
 
-        if (!$masked) {
-            return $header . $payload;
+        if (! $masked) {
+            return $header.$payload;
         }
 
         $maskingKey = random_bytes(4);
@@ -60,6 +65,6 @@ final class Frame
             $maskedPayload .= $payload[$i] ^ $maskingKey[$i % 4];
         }
 
-        return $header . $maskingKey . $maskedPayload;
+        return $header.$maskingKey.$maskedPayload;
     }
 }

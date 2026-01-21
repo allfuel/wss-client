@@ -14,5 +14,28 @@
         "psr-4": {
             "Fuel\\Wss\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Fuel\\Wss\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "pint": "vendor/bin/pint",
+        "phpstan": "vendor/bin/phpstan analyse",
+        "test": "vendor/bin/pest",
+        "rector": "vendor/bin/rector process --dry-run"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "require-dev": {
+        "laravel/pint": "*",
+        "phpstan/phpstan": "*",
+        "pestphp/pest": "*",
+        "pestphp/pest-plugin": "*",
+        "rector/rector": "*"
     }
 }

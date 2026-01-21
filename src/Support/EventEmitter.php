@@ -16,7 +16,7 @@ final class EventEmitter
 
     public function emit(string $event, mixed ...$arguments): void
     {
-        if (!array_key_exists($event, $this->listeners)) {
+        if (! array_key_exists($event, $this->listeners)) {
             return;
         }
 

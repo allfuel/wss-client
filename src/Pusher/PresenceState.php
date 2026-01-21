@@ -8,6 +8,7 @@ final class PresenceState
 {
     /** @var array<string, array{user_id: string, user_info?: array<string, mixed>}> */
     private array $members;
+
     private int $count;
 
     /** @param array<string, array{user_id: string, user_info?: array<string, mixed>}> $members */
@@ -21,7 +22,7 @@ final class PresenceState
     public static function fromSubscription(array $payload): self
     {
         $presence = $payload['presence'] ?? null;
-        if (!is_array($presence)) {
+        if (! is_array($presence)) {
             return new self([], 0);
         }
 
@@ -29,7 +30,7 @@ final class PresenceState
         $hash = $presence['hash'] ?? null;
         if (is_array($hash)) {
             foreach ($hash as $userId => $userInfo) {
-                if (!is_string($userId) || $userId === '') {
+                if (! is_string($userId) || $userId === '') {
                     continue;
                 }
 
@@ -45,7 +46,7 @@ final class PresenceState
         $ids = $presence['ids'] ?? null;
         if (is_array($ids)) {
             foreach ($ids as $userId) {
-                if (!is_string($userId) || $userId === '') {
+                if (! is_string($userId) || $userId === '') {
                     continue;
                 }
 
@@ -70,7 +71,7 @@ final class PresenceState
     public function applyMemberAdded(array $payload): void
     {
         $userId = $payload['user_id'] ?? null;
-        if (!is_string($userId) || $userId === '') {
+        if (! is_string($userId) || $userId === '') {
             return;
         }
 
@@ -80,7 +81,7 @@ final class PresenceState
             $member['user_info'] = $userInfo;
         }
 
-        $isNew = !isset($this->members[$userId]);
+        $isNew = ! isset($this->members[$userId]);
         $this->members[$userId] = $member;
         if ($isNew) {
             $this->count += 1;
@@ -93,7 +94,7 @@ final class PresenceState
     public function applyMemberRemoved(array $payload): void
     {
         $userId = $payload['user_id'] ?? null;
-        if (!is_string($userId) || $userId === '') {
+        if (! is_string($userId) || $userId === '') {
             return;
         }
 
@@ -102,7 +103,7 @@ final class PresenceState
 
         if ($existed && $this->count > 0) {
             $this->count -= 1;
-        } elseif (!$existed && $this->count > 0) {
+        } elseif (! $existed && $this->count > 0) {
             $this->count -= 1;
         }
 

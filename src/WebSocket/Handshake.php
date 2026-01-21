@@ -46,7 +46,7 @@ final class Handshake
 
     public static function validateResponse(string $response, string $key): void
     {
-        if (!str_contains($response, "\r\n\r\n")) {
+        if (! str_contains($response, "\r\n\r\n")) {
             throw new RuntimeException('Handshake response is incomplete.');
         }
 
@@ -54,7 +54,7 @@ final class Handshake
         $lines = preg_split('/\r\n/', $headerBlock);
         $statusLine = $lines[0] ?? '';
 
-        if (!str_starts_with($statusLine, 'HTTP/1.1 101')) {
+        if (! str_starts_with($statusLine, 'HTTP/1.1 101')) {
             throw new RuntimeException('Handshake failed: unexpected status line.');
         }
 
@@ -71,13 +71,13 @@ final class Handshake
         }
 
         $expected = self::expectedAccept($key);
-        if (!hash_equals($expected, $accept)) {
+        if (! hash_equals($expected, $accept)) {
             throw new RuntimeException('Handshake failed: invalid Sec-WebSocket-Accept header.');
         }
     }
 
     private static function expectedAccept(string $key): string
     {
-        return base64_encode(sha1($key . self::MAGIC_GUID, true));
+        return base64_encode(sha1($key.self::MAGIC_GUID, true));
     }
 }

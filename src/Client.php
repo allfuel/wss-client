@@ -16,22 +16,28 @@ use RuntimeException;
 final class Client
 {
     private ClientConfig $config;
+
     private EventEmitter $emitter;
+
     private Parser $parser;
 
     /** @var resource|null */
-    private $stream = null;
+    private $stream;
+
     private bool $closing = false;
+
     private float $lastPingAt = 0.0;
+
     private ?string $socketId = null;
+
     /** @var array<string, PresenceState> */
     private array $presenceStates = [];
 
     public function __construct(ClientConfig $config)
     {
         $this->config = $config;
-        $this->emitter = new EventEmitter();
-        $this->parser = new Parser();
+        $this->emitter = new EventEmitter;
+        $this->parser = new Parser;
     }
 
     public function connect(): void
@@ -85,7 +91,7 @@ final class Client
         }
 
         $response = '';
-        while (!str_contains($response, "\r\n\r\n")) {
+        while (! str_contains($response, "\r\n\r\n")) {
             $chunk = fread($stream, 1024);
             if ($chunk === false) {
                 fclose($stream);
@@ -94,10 +100,11 @@ final class Client
 
             if ($chunk === '') {
                 $meta = stream_get_meta_data($stream);
-                if (!empty($meta['timed_out'])) {
+                if (! empty($meta['timed_out'])) {
                     fclose($stream);
                     throw new RuntimeException('Handshake timed out.');
                 }
+
                 continue;
             }
 
@@ -148,6 +155,9 @@ final class Client
         $this->emitter->on($event, $listener);
     }
 
+    /**
+     * @param  array{auth?: string, channel_data?: array<string, mixed>|string}  $options
+     */
     public function subscribe(string $channel, array $options = []): void
     {
         if ($channel === '') {
@@ -169,7 +179,7 @@ final class Client
             $data['auth'] = $auth;
         }
 
-        if ($channelData !== null && !array_key_exists('channel_data', $data)) {
+        if ($channelData !== null && ! array_key_exists('channel_data', $data)) {
             $data['channel_data'] = $this->normalizeChannelData($channelData);
         }
 
@@ -181,13 +191,16 @@ final class Client
         $this->send(Frame::encodeText($payload));
     }
 
+    /**
+     * @param  array<string, mixed>  $payload
+     */
     public function sendClientEvent(string $channel, string $eventName, array $payload): void
     {
-        if (!str_starts_with($eventName, 'client-')) {
+        if (! str_starts_with($eventName, 'client-')) {
             throw new InvalidArgumentException('Client events must start with "client-".');
         }
 
-        if (!$this->requiresAuth($channel)) {
+        if (! $this->requiresAuth($channel)) {
             throw new InvalidArgumentException('Client events must target private or presence channels.');
         }
 
@@ -213,6 +226,7 @@ final class Client
         $data = stream_get_contents($this->stream);
         if ($data === false) {
             $this->emitter->emit('error', new RuntimeException('Failed to read from socket.'));
+
             return;
         }
 
@@ -221,8 +235,9 @@ final class Client
         }
 
         foreach ($this->parser->parse() as $frame) {
-            if (!$frame['fin']) {
+            if (! $frame['fin']) {
                 $this->emitter->emit('error', new RuntimeException('Fragmented frames are not supported yet.'));
+
                 continue;
             }
 
@@ -240,7 +255,7 @@ final class Client
             return;
         }
 
-        if (!$this->closing) {
+        if (! $this->closing) {
             $this->closing = true;
             $this->send(Frame::encodeClose());
         }
@@ -278,7 +293,7 @@ final class Client
                 $this->emitter->emit('pong', $payload);
                 break;
             case Frame::OPCODE_CLOSE:
-                if (!$this->closing) {
+                if (! $this->closing) {
                     $this->closing = true;
                     $this->send(Frame::encodeClose());
                 }
@@ -302,6 +317,9 @@ final class Client
         }
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     private function sendPusherEvent(string $event, array $data): void
     {
         $payload = [
@@ -318,7 +336,7 @@ final class Client
         $this->emitter->emit('message', $payload);
 
         $decoded = json_decode($payload, true);
-        if (!is_array($decoded) || !isset($decoded['event'])) {
+        if (! is_array($decoded) || ! isset($decoded['event'])) {
             return;
         }
 
@@ -337,10 +355,8 @@ final class Client
             }
         }
 
-        if ($event === 'pusher_internal:subscription_succeeded' && $channel !== null && is_array($data)) {
-            if (str_starts_with($channel, 'presence-')) {
-                $this->presenceStates[$channel] = PresenceState::fromSubscription($data);
-            }
+        if ($event === 'pusher_internal:subscription_succeeded' && $channel !== null && is_array($data) && str_starts_with($channel, 'presence-')) {
+            $this->presenceStates[$channel] = PresenceState::fromSubscription($data);
         }
 
         if ($event === 'pusher_internal:member_added' && $channel !== null && is_array($data)) {
@@ -349,10 +365,8 @@ final class Client
             $this->presenceStates[$channel] = $state;
         }
 
-        if ($event === 'pusher_internal:member_removed' && $channel !== null && is_array($data)) {
-            if (isset($this->presenceStates[$channel])) {
-                $this->presenceStates[$channel]->applyMemberRemoved($data);
-            }
+        if ($event === 'pusher_internal:member_removed' && $channel !== null && is_array($data) && isset($this->presenceStates[$channel])) {
+            $this->presenceStates[$channel]->applyMemberRemoved($data);
         }
 
         $this->emitter->emit($event, $data, $channel, $decoded);

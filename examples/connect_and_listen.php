@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Fuel\Wss\Client;
 use Fuel\Wss\ClientConfig;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 $host = getenv('FUEL_WSS_HOST') ?: 'wss.vask.dev';
 $port = (int) (getenv('FUEL_WSS_PORT') ?: 443);

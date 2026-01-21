@@ -9,14 +9,23 @@ use InvalidArgumentException;
 final class ClientConfig
 {
     public readonly string $host;
+
     public readonly int $port;
+
     public readonly bool $useTls;
+
     public readonly string $appKey;
+
     public readonly ?string $appSecret;
+
     public readonly ?string $subprotocol;
+
     public readonly string $path;
+
     public readonly float $timeoutSeconds;
+
     public readonly float $pingIntervalSeconds;
+
     public readonly bool $tlsVerifyPeer;
 
     public function __construct(
@@ -49,7 +58,7 @@ final class ClientConfig
         }
 
         if ($resolvedPath[0] !== '/') {
-            $resolvedPath = '/' . $resolvedPath;
+            $resolvedPath = '/'.$resolvedPath;
         }
 
         if ($timeoutSeconds <= 0.0) {

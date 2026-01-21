@@ -164,7 +164,7 @@ After this epic is complete, unpause Fuel tasks `f-280b86` and `f-f5abb9`.
 - [x] Presence channels work: subscription succeeded, member add/remove processed, member count exposed.
 - [x] Client events work: one PHP process sends `client-*` event and another receives it.
 - [x] Composer package is usable: PSR-4 autoload, strict types everywhere, PHPStan-friendly array shapes.
-- [ ] QA tooling installed and runnable: pint/phpstan/pest/rector all pass locally.
+- [x] QA tooling installed and runnable: pint/phpstan/pest/rector all pass locally.
 - [ ] Examples exist under `examples/` and are documented in `README.md`.
 - [ ] "Taylor Otwell would be happy": API feels Laravel-quality (clean naming, predictable behavior), docs/examples are crisp, errors are actionable, and there are no footguns (sane defaults, strict validation, graceful reconnect strategy).
 - [ ] "Guaranteed to work" standard: repo includes deterministic integration proof (real server OR local soketi), and a demo script (or two scripts) that reliably shows: connect -> subscribe -> presence count changes -> client event roundtrip between two PHP processes.
@@ -178,6 +178,7 @@ After this epic is complete, unpause Fuel tasks `f-280b86` and `f-f5abb9`.
 - Iteration 4: added Pusher subscription handling with auth helpers and event dispatch, then smoke-tested subscribe flow against local Soketi.
 - Iteration 5: added presence state tracking with member add/remove handling and smoke-tested against local Soketi.
 - Iteration 6: added client event sending with JSON payload encoding and smoke-tested against local Soketi with client events enabled.
+- Iteration 7: added QA tooling configs, wired composer scripts, added a basic Pest test, and ran pint/phpstan/pest/rector.
 
 ## Implementation Notes
 <!-- Tasks: append discoveries, decisions, gotchas here -->
