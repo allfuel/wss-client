@@ -168,7 +168,7 @@ After this epic is complete, unpause Fuel tasks `f-280b86` and `f-f5abb9`.
 - [x] Examples exist under `examples/` and are documented in `README.md`.
 - [x] "Taylor Otwell would be happy": API feels Laravel-quality (clean naming, predictable behavior), docs/examples are crisp, errors are actionable, and there are no footguns (sane defaults, strict validation, graceful reconnect strategy).
 - [x] "Guaranteed to work" standard: repo includes deterministic integration proof (real server OR local soketi), and a demo script (or two scripts) that reliably shows: connect -> subscribe -> presence count changes -> client event roundtrip between two PHP processes.
-- [ ] After epic completion: unpause Fuel tasks `f-280b86` and `f-f5abb9`.
+- [x] After epic completion: unpause Fuel tasks `f-280b86` and `f-f5abb9`.
 
 ## Progress Log
 
@@ -182,6 +182,7 @@ After this epic is complete, unpause Fuel tasks `f-280b86` and `f-f5abb9`.
 - Iteration 8: added README documentation plus presence/client event examples and ran the presence demo (wss.vask.dev returned 403).
 - Iteration 9: added deterministic demo script + docs, enabled Soketi client events, and ran the demo against local Soketi.
 - Iteration 10: added auto-reconnect backoff, tightened connection errors, documented events/reconnect behavior, ran deterministic demo against local Soketi.
+- Iteration 11: unpaused follow-up Fuel tasks for reality and quality-gate setup.
 
 ## Implementation Notes
 <!-- Tasks: append discoveries, decisions, gotchas here -->
