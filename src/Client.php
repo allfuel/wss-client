@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Fuel\Wss;
 
+use Fuel\Wss\Pusher\Auth;
 use Fuel\Wss\Support\EventEmitter;
 use Fuel\Wss\WebSocket\Frame;
 use Fuel\Wss\WebSocket\Handshake;
 use Fuel\Wss\WebSocket\Parser;
+use InvalidArgumentException;
 use RuntimeException;
 
 final class Client
@@ -20,6 +22,7 @@ final class Client
     private $stream = null;
     private bool $closing = false;
     private float $lastPingAt = 0.0;
+    private ?string $socketId = null;
 
     public function __construct(ClientConfig $config)
     {
@@ -120,9 +123,42 @@ final class Client
         return $this->stream;
     }
 
+    public function socketId(): ?string
+    {
+        return $this->socketId;
+    }
+
     public function on(string $event, callable $listener): void
     {
         $this->emitter->on($event, $listener);
+    }
+
+    public function subscribe(string $channel, array $options = []): void
+    {
+        if ($channel === '') {
+            throw new InvalidArgumentException('Channel name must not be empty.');
+        }
+
+        $data = ['channel' => $channel];
+        $channelData = $options['channel_data'] ?? null;
+        $auth = $options['auth'] ?? null;
+
+        if ($auth === null && $this->requiresAuth($channel)) {
+            $auth = $this->buildAuth($channel, $channelData);
+            if ($channelData !== null) {
+                $data['channel_data'] = $this->normalizeChannelData($channelData);
+            }
+        }
+
+        if ($auth !== null) {
+            $data['auth'] = $auth;
+        }
+
+        if ($channelData !== null && !array_key_exists('channel_data', $data)) {
+            $data['channel_data'] = $this->normalizeChannelData($channelData);
+        }
+
+        $this->sendPusherEvent('pusher:subscribe', $data);
     }
 
     public function sendText(string $payload): void
@@ -197,7 +233,7 @@ final class Client
     {
         switch ($opcode) {
             case Frame::OPCODE_TEXT:
-                $this->emitter->emit('message', $payload);
+                $this->handleMessage($payload);
                 break;
             case Frame::OPCODE_PING:
                 $this->send(Frame::encodePong($payload));
@@ -229,5 +265,89 @@ final class Client
         if ($written === false) {
             $this->emitter->emit('error', new RuntimeException('Failed to write to socket.'));
         }
+    }
+
+    private function sendPusherEvent(string $event, array $data): void
+    {
+        $payload = [
+            'event' => $event,
+            'data' => $data,
+        ];
+
+        $json = json_encode($payload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
+        $this->sendText($json);
+    }
+
+    private function handleMessage(string $payload): void
+    {
+        $this->emitter->emit('message', $payload);
+
+        $decoded = json_decode($payload, true);
+        if (!is_array($decoded) || !isset($decoded['event'])) {
+            return;
+        }
+
+        $event = (string) $decoded['event'];
+        $data = $decoded['data'] ?? null;
+        $channel = isset($decoded['channel']) ? (string) $decoded['channel'] : null;
+
+        if (is_string($data)) {
+            $data = $this->decodeJsonString($data);
+        }
+
+        if ($event === 'pusher:connection_established' && is_array($data)) {
+            $socketId = $data['socket_id'] ?? null;
+            if (is_string($socketId) && $socketId !== '') {
+                $this->socketId = $socketId;
+            }
+        }
+
+        $this->emitter->emit($event, $data, $channel, $decoded);
+    }
+
+    private function decodeJsonString(string $payload): mixed
+    {
+        $decoded = json_decode($payload, true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return $decoded;
+        }
+
+        return $payload;
+    }
+
+    private function requiresAuth(string $channel): bool
+    {
+        return str_starts_with($channel, 'private-') || str_starts_with($channel, 'presence-');
+    }
+
+    private function buildAuth(string $channel, mixed $channelData): string
+    {
+        if ($this->config->appSecret === null) {
+            throw new RuntimeException('App secret is required to subscribe to private channels.');
+        }
+
+        if ($this->socketId === null) {
+            throw new RuntimeException('Socket ID is required before subscribing to private channels.');
+        }
+
+        $encodedChannelData = null;
+        if ($channelData !== null) {
+            $encodedChannelData = $this->normalizeChannelData($channelData);
+        }
+
+        return Auth::sign($this->config->appKey, $this->config->appSecret, $this->socketId, $channel, $encodedChannelData);
+    }
+
+    private function normalizeChannelData(mixed $channelData): string
+    {
+        if (is_string($channelData)) {
+            return $channelData;
+        }
+
+        if (is_array($channelData)) {
+            return json_encode($channelData, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
+        }
+
+        throw new InvalidArgumentException('Channel data must be a string or array.');
     }
 }

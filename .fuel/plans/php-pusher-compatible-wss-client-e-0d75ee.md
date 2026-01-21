@@ -160,7 +160,7 @@ After this epic is complete, unpause Fuel tasks `f-280b86` and `f-f5abb9`.
 
 - [x] Library provides a hookable API: no internal infinite loop; `stream()` + `tick()` work with `stream_select()`.
 - [x] Successful websocket handshake + message exchange with a Pusher-compatible server (wss.vask.dev OR local soketi fallback).
-- [ ] Channel subscription works; user can register listeners and receive events.
+- [x] Channel subscription works; user can register listeners and receive events.
 - [ ] Presence channels work: subscription succeeded, member add/remove processed, member count exposed.
 - [ ] Client events work: one PHP process sends `client-*` event and another receives it.
 - [x] Composer package is usable: PSR-4 autoload, strict types everywhere, PHPStan-friendly array shapes.
@@ -175,6 +175,7 @@ After this epic is complete, unpause Fuel tasks `f-280b86` and `f-f5abb9`.
 - Iteration 1: added PSR-4 autoloading and a strict ClientConfig with validation, then smoke-tested autoload.
 - Iteration 2: added WebSocket client/handshake/frame parsing with hookable `stream()` + `tick()` and smoke-tested via local loop.
 - Iteration 3: added optional subprotocol support and handshake buffering, plus a configurable connect example; smoke-tested handshake + message exchange against local Soketi.
+- Iteration 4: added Pusher subscription handling with auth helpers and event dispatch, then smoke-tested subscribe flow against local Soketi.
 
 ## Implementation Notes
 <!-- Tasks: append discoveries, decisions, gotchas here -->
