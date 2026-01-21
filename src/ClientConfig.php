@@ -13,6 +13,7 @@ final class ClientConfig
     public readonly bool $useTls;
     public readonly string $appKey;
     public readonly ?string $appSecret;
+    public readonly ?string $subprotocol;
     public readonly string $path;
     public readonly float $timeoutSeconds;
     public readonly float $pingIntervalSeconds;
@@ -27,7 +28,8 @@ final class ClientConfig
         ?string $path = null,
         float $timeoutSeconds = 10.0,
         float $pingIntervalSeconds = 30.0,
-        bool $tlsVerifyPeer = true
+        bool $tlsVerifyPeer = true,
+        ?string $subprotocol = null
     ) {
         if ($host === '') {
             throw new InvalidArgumentException('Host must not be empty.');
@@ -58,6 +60,10 @@ final class ClientConfig
             throw new InvalidArgumentException('Ping interval must be greater than zero.');
         }
 
+        if ($subprotocol !== null && $subprotocol === '') {
+            throw new InvalidArgumentException('Subprotocol must not be empty when provided.');
+        }
+
         $this->host = $host;
         $this->port = $port;
         $this->useTls = $useTls;
@@ -67,5 +73,6 @@ final class ClientConfig
         $this->timeoutSeconds = $timeoutSeconds;
         $this->pingIntervalSeconds = $pingIntervalSeconds;
         $this->tlsVerifyPeer = $tlsVerifyPeer;
+        $this->subprotocol = $subprotocol;
     }
 }

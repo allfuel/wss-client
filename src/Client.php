@@ -100,6 +100,14 @@ final class Client
 
         Handshake::validateResponse($response, $key);
 
+        $headerEnd = strpos($response, "\r\n\r\n");
+        if ($headerEnd !== false) {
+            $remaining = substr($response, $headerEnd + 4);
+            if ($remaining !== '') {
+                $this->parser->append($remaining);
+            }
+        }
+
         stream_set_blocking($stream, false);
         $this->stream = $stream;
         $this->lastPingAt = microtime(true);

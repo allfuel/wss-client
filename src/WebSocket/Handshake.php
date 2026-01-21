@@ -24,8 +24,7 @@ final class Handshake
         $defaultPort = $config->useTls ? 443 : 80;
         $hostHeader = $port === $defaultPort ? $host : sprintf('%s:%d', $host, $port);
         $originScheme = $config->useTls ? 'https' : 'http';
-
-        return implode("\r\n", [
+        $headers = [
             sprintf('GET %s HTTP/1.1', $path),
             sprintf('Host: %s', $hostHeader),
             sprintf('Origin: %s://%s', $originScheme, $host),
@@ -34,8 +33,15 @@ final class Handshake
             'Connection: Upgrade',
             sprintf('Sec-WebSocket-Key: %s', $key),
             'Sec-WebSocket-Version: 13',
-            "\r\n",
-        ]);
+        ];
+
+        if ($config->subprotocol !== null) {
+            $headers[] = sprintf('Sec-WebSocket-Protocol: %s', $config->subprotocol);
+        }
+
+        $headers[] = "\r\n";
+
+        return implode("\r\n", $headers);
     }
 
     public static function validateResponse(string $response, string $key): void
