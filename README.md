@@ -37,6 +37,8 @@ variables if you want to point at a local Soketi instance.
   - Listens for client events on a private/presence channel.
 - `php examples/client_event_sender.php`
   - Sends a `client-*` event after subscription succeeds.
+- `php examples/deterministic_demo.php`
+  - Forks a listener + sender, then verifies presence updates and client event roundtrip.
 
 ### Local Soketi (optional)
 
@@ -45,7 +47,23 @@ docker run --rm -p 6001:6001 \
   -e SOKETI_DEFAULT_APP_ID=vask-homepage \
   -e SOKETI_DEFAULT_APP_KEY=vask-homepage \
   -e SOKETI_DEFAULT_APP_SECRET=7b4dae81fba6f43ff3a5cbc0a12b3c3d0840ddbcbea8ee80f2f78c086a00a00b \
+  -e SOKETI_DEFAULT_APP_ENABLE_CLIENT_MESSAGES=true \
   quay.io/soketi/soketi:latest
 
 FUEL_WSS_HOST=127.0.0.1 FUEL_WSS_PORT=6001 FUEL_WSS_TLS=false php examples/presence_demo.php
 ```
+
+### Deterministic demo (Soketi)
+
+```bash
+docker run --rm -p 6001:6001 \
+  -e SOKETI_DEFAULT_APP_ID=vask-homepage \
+  -e SOKETI_DEFAULT_APP_KEY=vask-homepage \
+  -e SOKETI_DEFAULT_APP_SECRET=7b4dae81fba6f43ff3a5cbc0a12b3c3d0840ddbcbea8ee80f2f78c086a00a00b \
+  -e SOKETI_DEFAULT_APP_ENABLE_CLIENT_MESSAGES=true \
+  quay.io/soketi/soketi:latest
+
+FUEL_WSS_HOST=127.0.0.1 FUEL_WSS_PORT=6001 FUEL_WSS_TLS=false php examples/deterministic_demo.php
+```
+
+The deterministic demo exits with status `0` when the listener receives the client event.
