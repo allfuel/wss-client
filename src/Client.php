@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Fuel\Wss;
 
 use Fuel\Wss\Pusher\Auth;
+use Fuel\Wss\Pusher\PresenceState;
 use Fuel\Wss\Support\EventEmitter;
 use Fuel\Wss\WebSocket\Frame;
 use Fuel\Wss\WebSocket\Handshake;
@@ -23,6 +24,8 @@ final class Client
     private bool $closing = false;
     private float $lastPingAt = 0.0;
     private ?string $socketId = null;
+    /** @var array<string, PresenceState> */
+    private array $presenceStates = [];
 
     public function __construct(ClientConfig $config)
     {
@@ -126,6 +129,18 @@ final class Client
     public function socketId(): ?string
     {
         return $this->socketId;
+    }
+
+    public function presenceState(string $channel): ?PresenceState
+    {
+        return $this->presenceStates[$channel] ?? null;
+    }
+
+    public function presenceCount(string $channel): ?int
+    {
+        $state = $this->presenceStates[$channel] ?? null;
+
+        return $state?->count();
     }
 
     public function on(string $event, callable $listener): void
@@ -299,6 +314,24 @@ final class Client
             $socketId = $data['socket_id'] ?? null;
             if (is_string($socketId) && $socketId !== '') {
                 $this->socketId = $socketId;
+            }
+        }
+
+        if ($event === 'pusher_internal:subscription_succeeded' && $channel !== null && is_array($data)) {
+            if (str_starts_with($channel, 'presence-')) {
+                $this->presenceStates[$channel] = PresenceState::fromSubscription($data);
+            }
+        }
+
+        if ($event === 'pusher_internal:member_added' && $channel !== null && is_array($data)) {
+            $state = $this->presenceStates[$channel] ?? PresenceState::empty();
+            $state->applyMemberAdded($data);
+            $this->presenceStates[$channel] = $state;
+        }
+
+        if ($event === 'pusher_internal:member_removed' && $channel !== null && is_array($data)) {
+            if (isset($this->presenceStates[$channel])) {
+                $this->presenceStates[$channel]->applyMemberRemoved($data);
             }
         }
 
