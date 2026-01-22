@@ -1,0 +1,2159 @@
+{
+    "commands": [
+        {
+            "type": "attach",
+            "class": "AttachCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "last_event_id",
+                    "value_type": "string|null",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "browser_click",
+            "class": "BrowserClickCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "pageId",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "selector",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "ref",
+                    "value_type": "string|null",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "browser_close",
+            "class": "BrowserCloseCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "contextId",
+                    "value_type": "string",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "browser_create",
+            "class": "BrowserCreateCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "contextId",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "pageId",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "viewport",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "userAgent",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "colorScheme",
+                    "value_type": "string|null",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "browser_fill",
+            "class": "BrowserFillCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "pageId",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "selector",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "value",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "ref",
+                    "value_type": "string|null",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "browser_goto",
+            "class": "BrowserGotoCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "pageId",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "url",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "waitUntil",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "timeout",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "html",
+                    "value_type": "bool",
+                    "required": false,
+                    "default": false
+                }
+            ]
+        },
+        {
+            "type": "browser_html",
+            "class": "BrowserHtmlCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": false,
+                    "default": {
+                        "date": "2026-01-22 20:39:35.303056",
+                        "timezone_type": 3,
+                        "timezone": "UTC"
+                    }
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": false,
+                    "default": ""
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "pageId",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "selector",
+                    "value_type": "string|null",
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "ref",
+                    "value_type": "string|null",
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "inner",
+                    "value_type": "bool",
+                    "required": false,
+                    "default": false
+                }
+            ]
+        },
+        {
+            "type": "browser_page",
+            "class": "BrowserPageCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "contextId",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "pageId",
+                    "value_type": "string",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "browser_run",
+            "class": "BrowserRunCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "pageId",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "code",
+                    "value_type": "string",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "browser_screenshot",
+            "class": "BrowserScreenshotCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "pageId",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "path",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "fullPage",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "format",
+                    "value_type": "string|null",
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "quality",
+                    "value_type": "string|null",
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "base64",
+                    "value_type": "string|null",
+                    "required": false,
+                    "default": null
+                }
+            ]
+        },
+        {
+            "type": "browser_scroll",
+            "class": "BrowserScrollCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "pageId",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "direction",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "amount",
+                    "value_type": "int",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "browser_scroll_into_view",
+            "class": "BrowserScrollIntoViewCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "pageId",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "selector",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "ref",
+                    "value_type": "string|null",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "browser_snapshot",
+            "class": "BrowserSnapshotCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "pageId",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "interactiveOnly",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "scope",
+                    "value_type": "string|null",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "browser_status",
+            "class": "BrowserStatusCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                }
+            ]
+        },
+        {
+            "type": "browser_text",
+            "class": "BrowserTextCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": false,
+                    "default": {
+                        "date": "2026-01-22 20:39:35.304011",
+                        "timezone_type": 3,
+                        "timezone": "UTC"
+                    }
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": false,
+                    "default": ""
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "pageId",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "selector",
+                    "value_type": "string|null",
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "ref",
+                    "value_type": "string|null",
+                    "required": false,
+                    "default": null
+                }
+            ]
+        },
+        {
+            "type": "browser_type",
+            "class": "BrowserTypeCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "pageId",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "selector",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "text",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "ref",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "delay",
+                    "value_type": "int",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "browser_wait",
+            "class": "BrowserWaitCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "page_id",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "selector",
+                    "value_type": "string|null",
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "ref",
+                    "value_type": "string|null",
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "delay",
+                    "value_type": "string|null",
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "url",
+                    "value_type": "string|null",
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "text",
+                    "value_type": "string|null",
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "state",
+                    "value_type": "string",
+                    "required": false,
+                    "default": "visible"
+                },
+                {
+                    "key": "timeout",
+                    "value_type": "int",
+                    "required": false,
+                    "default": 30000
+                }
+            ]
+        },
+        {
+            "type": "dependency_add",
+            "class": "DependencyAddCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "task_id",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "blocker_task_id",
+                    "value_type": "string",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "detach",
+            "class": "DetachCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                }
+            ]
+        },
+        {
+            "type": "health_reset",
+            "class": "HealthResetCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "agent",
+                    "value_type": "string",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "pause",
+            "class": "PauseCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                }
+            ]
+        },
+        {
+            "type": "reload_config",
+            "class": "ReloadConfigCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                }
+            ]
+        },
+        {
+            "type": "request_blocked_tasks",
+            "class": "RequestBlockedTasksCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                }
+            ]
+        },
+        {
+            "type": "request_completed_tasks",
+            "class": "RequestCompletedTasksCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                }
+            ]
+        },
+        {
+            "type": "request_done_tasks",
+            "class": "RequestDoneTasksCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                }
+            ]
+        },
+        {
+            "type": "request_epics",
+            "class": "RequestEpicsCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                }
+            ]
+        },
+        {
+            "type": "request_snapshot",
+            "class": "RequestSnapshotCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                }
+            ]
+        },
+        {
+            "type": "resume",
+            "class": "ResumeCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                }
+            ]
+        },
+        {
+            "type": "set_task_review_enabled",
+            "class": "SetTaskReviewCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "enabled",
+                    "value_type": "bool",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "stop",
+            "class": "StopCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "mode",
+                    "value_type": "string",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "task_create",
+            "class": "TaskCreateCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "title",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "description",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "labels",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "priority",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "task_type",
+                    "value_type": "string|null"
+                },
+                {
+                    "key": "complexity",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "epic_id",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "blocked_by",
+                    "value_type": "string|null",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "task_done",
+            "class": "TaskDoneCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "task_id",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "reason",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "commit_hash",
+                    "value_type": "string|null",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "task_reopen",
+            "class": "TaskReopenCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "task_id",
+                    "value_type": "string",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "task_start",
+            "class": "TaskStartCommand",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "task_id",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "agent_override",
+                    "value_type": "string|null",
+                    "required": true
+                }
+            ]
+        }
+    ],
+    "events": [
+        {
+            "type": "blocked_tasks",
+            "class": "BlockedTasksEvent",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "tasks",
+                    "value_type": "array",
+                    "required": true
+                },
+                {
+                    "key": "total",
+                    "value_type": "int",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "browser_response",
+            "class": "BrowserResponseEvent",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "success",
+                    "value_type": "bool",
+                    "required": true
+                },
+                {
+                    "key": "result",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "error",
+                    "value_type": "string|null",
+                    "required": true
+                },
+                {
+                    "key": "error_code",
+                    "value_type": "string|null",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "completed_tasks",
+            "class": "CompletedTasksEvent",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "tasks",
+                    "value_type": "array",
+                    "required": true
+                },
+                {
+                    "key": "total",
+                    "value_type": "int",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "config_reloaded",
+            "class": "ConfigReloadedEvent",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                }
+            ]
+        },
+        {
+            "type": "done_tasks",
+            "class": "DoneTasksEvent",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "tasks",
+                    "value_type": "array",
+                    "required": true
+                },
+                {
+                    "key": "total",
+                    "value_type": "int",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "epics",
+            "class": "EpicsEvent",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "epics",
+                    "value_type": "array",
+                    "required": true
+                },
+                {
+                    "key": "total",
+                    "value_type": "int",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "error",
+            "class": "ErrorEvent",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "message",
+                    "value_type": "string",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "health_change",
+            "class": "HealthChangeEvent",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "agent",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "status",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "consecutive_failures",
+                    "value_type": "int",
+                    "required": true
+                },
+                {
+                    "key": "in_backoff",
+                    "value_type": "bool",
+                    "required": true
+                },
+                {
+                    "key": "is_dead",
+                    "value_type": "bool",
+                    "required": true
+                },
+                {
+                    "key": "backoff_seconds",
+                    "value_type": "int",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "hello",
+            "class": "HelloEvent",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "version",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "pid",
+                    "value_type": "string|null",
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "project_path",
+                    "value_type": "string|null",
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "project_name",
+                    "value_type": "string|null",
+                    "required": false,
+                    "default": null
+                }
+            ]
+        },
+        {
+            "type": "output_chunk",
+            "class": "OutputChunkEvent",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "task_id",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "run_id",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "stream",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "chunk",
+                    "value_type": "string",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "review_completed",
+            "class": "ReviewCompletedEvent",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "task_id",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "passed",
+                    "value_type": "bool",
+                    "required": true
+                },
+                {
+                    "key": "issues",
+                    "value_type": "array",
+                    "required": true
+                },
+                {
+                    "key": "was_already_done",
+                    "value_type": "bool",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "snapshot",
+            "class": "SnapshotEvent",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "snapshot",
+                    "value_type": "object (ConsumeSnapshot)",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "status_line",
+            "class": "StatusLineEvent",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "level",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "text",
+                    "value_type": "string",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "task_completed",
+            "class": "TaskCompletedEvent",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "task_id",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "run_id",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "exit_code",
+                    "value_type": "int",
+                    "required": true
+                },
+                {
+                    "key": "completion_type",
+                    "value_type": "string",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "task_create_response",
+            "class": "TaskCreateResponseEvent",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "task_id",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "success",
+                    "value_type": "bool",
+                    "required": true
+                },
+                {
+                    "key": "error",
+                    "value_type": "string|null",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": "task_spawned",
+            "class": "TaskSpawnedEvent",
+            "fields": [
+                {
+                    "key": "type",
+                    "value_type": "string",
+                    "meta": true
+                },
+                {
+                    "key": "timestamp",
+                    "value_type": "string (ISO 8601)",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "instance_id",
+                    "value_type": "string",
+                    "meta": true,
+                    "required": true
+                },
+                {
+                    "key": "request_id",
+                    "value_type": "string|null",
+                    "meta": true,
+                    "required": false,
+                    "default": null
+                },
+                {
+                    "key": "task_id",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "run_id",
+                    "value_type": "string",
+                    "required": true
+                },
+                {
+                    "key": "agent",
+                    "value_type": "string",
+                    "required": true
+                }
+            ]
+        }
+    ]
+}
+
