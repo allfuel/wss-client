@@ -24,10 +24,16 @@ final class Handshake
         $defaultPort = $config->useTls ? 443 : 80;
         $hostHeader = $port === $defaultPort ? $host : sprintf('%s:%d', $host, $port);
         $originScheme = $config->useTls ? 'https' : 'http';
+
+        $origin = $config->origin;
+        if ($origin === null) {
+            $origin = sprintf('%s://%s', $originScheme, $host);
+        }
+
         $headers = [
             sprintf('GET %s HTTP/1.1', $path),
             sprintf('Host: %s', $hostHeader),
-            sprintf('Origin: %s://%s', $originScheme, $host),
+            sprintf('Origin: %s', $origin),
             'User-Agent: fuel-wss-php/0.1',
             'Upgrade: websocket',
             'Connection: Upgrade',
@@ -55,7 +61,7 @@ final class Handshake
         $statusLine = $lines[0] ?? '';
 
         if (! str_starts_with($statusLine, 'HTTP/1.1 101')) {
-            throw new RuntimeException('Handshake failed: unexpected status line.');
+            throw new RuntimeException(sprintf('Handshake failed: expected HTTP/1.1 101 but got "%s".', $statusLine));
         }
 
         $accept = null;

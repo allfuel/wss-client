@@ -10,11 +10,15 @@ require __DIR__.'/../vendor/autoload.php';
 $host = getenv('FUEL_WSS_HOST') ?: 'wss.vask.dev';
 $port = (int) (getenv('FUEL_WSS_PORT') ?: 443);
 $useTls = filter_var(getenv('FUEL_WSS_TLS') ?: 'true', FILTER_VALIDATE_BOOL);
-$appKey = getenv('FUEL_WSS_APP_KEY') ?: 'vask-homepage';
+$origin = getenv('FUEL_WSS_ORIGIN');
+$origin = ($origin === false || $origin === '')
+    ? (($useTls ? 'https' : 'http').'://localhost')
+    : $origin;
+$appKey = getenv('FUEL_WSS_APP_KEY') ?: 'app_key';
 $appSecret = getenv('FUEL_WSS_APP_SECRET')
-    ?: '7b4dae81fba6f43ff3a5cbc0a12b3c3d0840ddbcbea8ee80f2f78c086a00a00b';
+    ?: 'app_secret';
 $path = getenv('FUEL_WSS_PATH')
-    ?: '/app/vask-homepage?protocol=7&client=fuel-wss-php&version=0.1&flash=false';
+    ?: sprintf('/app/%s?protocol=7&client=fuel-wss-php&version=0.1&flash=false', $appKey);
 $subprotocol = getenv('FUEL_WSS_SUBPROTOCOL') ?: 'pusher';
 $channel = getenv('FUEL_WSS_CHANNEL') ?: 'presence-fuel-websocket-test';
 $duration = (float) (getenv('FUEL_WSS_DURATION') ?: 20.0);
@@ -28,6 +32,7 @@ $config = new ClientConfig(
     appKey: $appKey,
     appSecret: $appSecret,
     path: $path,
+    origin: $origin,
     timeoutSeconds: 10.0,
     pingIntervalSeconds: 30.0,
     tlsVerifyPeer: true,

@@ -22,6 +22,14 @@ final class ClientConfig
 
     public readonly string $path;
 
+    /**
+     * Value used for the HTTP Origin header during the WebSocket handshake.
+     *
+     * Some hosts (e.g. behind Cloudflare/WAF) validate Origin against an allow-list,
+     * which may differ from the websocket host.
+     */
+    public readonly ?string $origin;
+
     public readonly float $timeoutSeconds;
 
     public readonly float $pingIntervalSeconds;
@@ -41,6 +49,7 @@ final class ClientConfig
         string $appKey,
         ?string $appSecret = null,
         ?string $path = null,
+        ?string $origin = null,
         float $timeoutSeconds = 10.0,
         float $pingIntervalSeconds = 30.0,
         bool $tlsVerifyPeer = true,
@@ -68,6 +77,10 @@ final class ClientConfig
 
         if ($resolvedPath[0] !== '/') {
             $resolvedPath = '/'.$resolvedPath;
+        }
+
+        if ($origin !== null && $origin === '') {
+            throw new InvalidArgumentException('Origin must not be empty when provided.');
         }
 
         if ($timeoutSeconds <= 0.0) {
@@ -100,6 +113,7 @@ final class ClientConfig
         $this->appKey = $appKey;
         $this->appSecret = $appSecret;
         $this->path = $resolvedPath;
+        $this->origin = $origin;
         $this->timeoutSeconds = $timeoutSeconds;
         $this->pingIntervalSeconds = $pingIntervalSeconds;
         $this->tlsVerifyPeer = $tlsVerifyPeer;

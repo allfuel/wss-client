@@ -7,11 +7,14 @@ to be driven by an external loop, so you can integrate it with Fuel daemons or a
 
 ```bash
 composer install
-php examples/connect_and_listen.php
+
+# If you're using the public demo host, you must provide a valid app key/secret.
+FUEL_WSS_APP_KEY=your_app_key FUEL_WSS_APP_SECRET=your_app_secret \
+  php examples/connect_and_listen.php
 ```
 
-The examples default to the public demo server at `wss.vask.dev`. Override settings with environment
-variables if you want to point at a local Soketi instance.
+The examples default to `wss.vask.dev` but use placeholder app credentials. Override settings with
+environment variables, or point them at a local Soketi instance.
 
 Fuel\Wss does not own an event loop. Use `stream_select()` (or your own loop) and call `tick()` to
 drive IO and timers.
@@ -50,14 +53,16 @@ while (true) {
 - `FUEL_WSS_HOST` (default `wss.vask.dev`)
 - `FUEL_WSS_PORT` (default `443`)
 - `FUEL_WSS_TLS` (default `true`)
-- `FUEL_WSS_APP_KEY` (default `vask-homepage`)
-- `FUEL_WSS_APP_SECRET` (default demo secret)
-- `FUEL_WSS_PATH` (default `/app/vask-homepage?protocol=7&client=fuel-wss-php&version=0.1&flash=false`)
+- `FUEL_WSS_ORIGIN` (default depends on example; overrides HTTP `Origin` header)
+- `FUEL_WSS_APP_KEY` (default `app_key`)
+- `FUEL_WSS_APP_SECRET` (default `app_secret`)
+- `FUEL_WSS_PATH` (default `/app/{FUEL_WSS_APP_KEY}?protocol=7&client=fuel-wss-php&version=0.1&flash=false`)
 - `FUEL_WSS_SUBPROTOCOL` (default `pusher`)
 - `FUEL_WSS_CHANNEL` (default `presence-fuel-websocket-test` for presence/client demos)
 - `FUEL_WSS_EVENT` (default `client-fuel-test`)
 - `FUEL_WSS_DURATION` (default `20` seconds)
 - `FUEL_WSS_USER_ID` and `FUEL_WSS_USER_NAME` (presence demos only)
+- `FUEL_WSS_DEBUG` (default `false`, deterministic demo only)
 
 ### Reconnects
 
@@ -93,26 +98,30 @@ $config = new ClientConfig(
 
 ```bash
 docker run --rm -p 6001:6001 \
-  -e SOKETI_DEFAULT_APP_ID=vask-homepage \
-  -e SOKETI_DEFAULT_APP_KEY=vask-homepage \
-  -e SOKETI_DEFAULT_APP_SECRET=7b4dae81fba6f43ff3a5cbc0a12b3c3d0840ddbcbea8ee80f2f78c086a00a00b \
+  -e SOKETI_DEFAULT_APP_ID=fuel-wss-demo \
+  -e SOKETI_DEFAULT_APP_KEY=fuel-wss-demo \
+  -e SOKETI_DEFAULT_APP_SECRET=dev-secret \
   -e SOKETI_DEFAULT_APP_ENABLE_CLIENT_MESSAGES=true \
   quay.io/soketi/soketi:latest
 
-FUEL_WSS_HOST=127.0.0.1 FUEL_WSS_PORT=6001 FUEL_WSS_TLS=false php examples/presence_demo.php
+FUEL_WSS_HOST=127.0.0.1 FUEL_WSS_PORT=6001 FUEL_WSS_TLS=false \
+  FUEL_WSS_APP_KEY=fuel-wss-demo FUEL_WSS_APP_SECRET=dev-secret \
+  php examples/presence_demo.php
 ```
 
 ### Deterministic demo (Soketi)
 
 ```bash
 docker run --rm -p 6001:6001 \
-  -e SOKETI_DEFAULT_APP_ID=vask-homepage \
-  -e SOKETI_DEFAULT_APP_KEY=vask-homepage \
-  -e SOKETI_DEFAULT_APP_SECRET=7b4dae81fba6f43ff3a5cbc0a12b3c3d0840ddbcbea8ee80f2f78c086a00a00b \
+  -e SOKETI_DEFAULT_APP_ID=fuel-wss-demo \
+  -e SOKETI_DEFAULT_APP_KEY=fuel-wss-demo \
+  -e SOKETI_DEFAULT_APP_SECRET=dev-secret \
   -e SOKETI_DEFAULT_APP_ENABLE_CLIENT_MESSAGES=true \
   quay.io/soketi/soketi:latest
 
-FUEL_WSS_HOST=127.0.0.1 FUEL_WSS_PORT=6001 FUEL_WSS_TLS=false php examples/deterministic_demo.php
+FUEL_WSS_HOST=127.0.0.1 FUEL_WSS_PORT=6001 FUEL_WSS_TLS=false \
+  FUEL_WSS_APP_KEY=fuel-wss-demo FUEL_WSS_APP_SECRET=dev-secret \
+  php examples/deterministic_demo.php
 ```
 
 The deterministic demo exits with status `0` when the listener receives the client event.

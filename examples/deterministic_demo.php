@@ -15,15 +15,62 @@ if (! function_exists('pcntl_fork')) {
 $host = getenv('FUEL_WSS_HOST') ?: 'wss.vask.dev';
 $port = (int) (getenv('FUEL_WSS_PORT') ?: 443);
 $useTls = filter_var(getenv('FUEL_WSS_TLS') ?: 'true', FILTER_VALIDATE_BOOL);
-$appKey = getenv('FUEL_WSS_APP_KEY') ?: 'vask-homepage';
+$origin = getenv('FUEL_WSS_ORIGIN');
+$origin = ($origin === false || $origin === '')
+    ? 'https://test.test'
+    : $origin;
+$appKey = getenv('FUEL_WSS_APP_KEY') ?: 'app_key';
 $appSecret = getenv('FUEL_WSS_APP_SECRET')
-    ?: '7b4dae81fba6f43ff3a5cbc0a12b3c3d0840ddbcbea8ee80f2f78c086a00a00b';
+    ?: 'app_secret';
 $path = getenv('FUEL_WSS_PATH')
-    ?: '/app/vask-homepage?protocol=7&client=fuel-wss-php&version=0.1&flash=false';
+    ?: sprintf('/app/%s?protocol=7&client=fuel-wss-php&version=0.1&flash=false', $appKey);
 $subprotocol = getenv('FUEL_WSS_SUBPROTOCOL') ?: 'pusher';
 $channel = getenv('FUEL_WSS_CHANNEL') ?: 'presence-fuel-websocket-test';
 $eventName = getenv('FUEL_WSS_EVENT') ?: 'client-fuel-test';
 $duration = (float) (getenv('FUEL_WSS_DURATION') ?: 20.0);
+
+$debug = filter_var(getenv('FUEL_WSS_DEBUG') ?: 'false', FILTER_VALIDATE_BOOL);
+
+$logPusherError = static function (string $label, mixed $data): void {
+    if (! is_array($data)) {
+        $dataJson = json_encode($data, JSON_UNESCAPED_SLASHES);
+        echo "{$label} pusher:error data={$dataJson}\n";
+
+        return;
+    }
+
+    $code = $data['code'] ?? null;
+    $message = $data['message'] ?? null;
+
+    $suffix = '';
+    if (is_scalar($code)) {
+        $suffix .= " code={$code}";
+    }
+
+    if (is_string($message) && $message !== '') {
+        $suffix .= " message=\"{$message}\"";
+    }
+
+    $dataJson = json_encode($data, JSON_UNESCAPED_SLASHES);
+    echo "{$label} pusher:error{$suffix} data={$dataJson}\n";
+};
+
+if ($debug) {
+    $logWireMessage = static function (string $label, string $message): void {
+        $decoded = json_decode($message, true);
+        if (! is_array($decoded) || ! isset($decoded['event'])) {
+            echo "{$label} message: {$message}\n";
+
+            return;
+        }
+
+        $event = (string) $decoded['event'];
+        $channel = isset($decoded['channel']) ? (string) $decoded['channel'] : null;
+        $suffix = $channel !== null ? " channel={$channel}" : '';
+
+        echo "{$label} event={$event}{$suffix}\n";
+    };
+}
 
 $config = new ClientConfig(
     host: $host,
@@ -32,6 +79,7 @@ $config = new ClientConfig(
     appKey: $appKey,
     appSecret: $appSecret,
     path: $path,
+    origin: $origin,
     timeoutSeconds: 10.0,
     pingIntervalSeconds: 30.0,
     tlsVerifyPeer: true,
@@ -52,6 +100,14 @@ if ($pid === 0) {
     $listener->on('open', static function (): void {
         echo "Listener connected.\n";
     });
+    $listener->on('pusher:error', static function (mixed $data) use ($logPusherError): void {
+        $logPusherError('Listener', $data);
+    });
+    if ($debug) {
+        $listener->on('message', static function (string $message) use ($logWireMessage): void {
+            $logWireMessage('Listener', $message);
+        });
+    }
     $listener->on('pusher:connection_established', function () use ($listener, $channel, $listenerId, $listenerName): void {
         $listener->subscribe($channel, [
             'channel_data' => [
@@ -121,6 +177,14 @@ $sent = false;
 $sender->on('open', static function (): void {
     echo "Sender connected.\n";
 });
+$sender->on('pusher:error', static function (mixed $data) use ($logPusherError): void {
+    $logPusherError('Sender', $data);
+});
+if ($debug) {
+    $sender->on('message', static function (string $message) use ($logWireMessage): void {
+        $logWireMessage('Sender', $message);
+    });
+}
 $sender->on('pusher:connection_established', function () use ($sender, $channel, $senderId, $senderName): void {
     $sender->subscribe($channel, [
         'channel_data' => [

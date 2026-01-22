@@ -1,0 +1,6 @@
+/vendor/
+.fuel/*
+!.fuel/reality.md
+!.fuel/plans/
+!.fuel/prompts/
+.fuel/prompts/*.new
