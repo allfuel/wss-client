@@ -344,9 +344,31 @@ final class Client
             throw new RuntimeException('Cannot send frame; socket is closed.');
         }
 
-        $written = fwrite($this->stream, $frame);
-        if ($written === false) {
-            $this->handleDisconnect(new RuntimeException('Failed to write to socket.'), microtime(true));
+        $totalWritten = 0;
+        $length = strlen($frame);
+        $attempts = 0;
+        $maxAttempts = 100;
+
+        while ($totalWritten < $length) {
+            $written = @fwrite($this->stream, substr($frame, $totalWritten));
+            if ($written === false) {
+                $this->handleDisconnect(new RuntimeException('Failed to write to socket.'), microtime(true));
+
+                return;
+            }
+            if ($written === 0) {
+                $attempts++;
+                if ($attempts >= $maxAttempts) {
+                    $this->handleDisconnect(new RuntimeException('Socket write stalled.'), microtime(true));
+
+                    return;
+                }
+                usleep(1000);
+
+                continue;
+            }
+            $attempts = 0;
+            $totalWritten += $written;
         }
     }
 
