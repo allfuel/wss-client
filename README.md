@@ -1,3 +1,9 @@
+WARNING: this isn't useful, don't use it
+
+
+---
+
+
 ## Fuel WSS PHP Client
 
 Fuel\Wss is a hookable PHP websocket client that speaks the Pusher protocol over TLS. It is designed
