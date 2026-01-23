@@ -22,7 +22,7 @@ fuel browser:close ctx                           # Cleanup
 Take a screenshot of any URL in one command - no setup needed. Saves to `/tmp` by default:
 
 ```bash
-fuel browser:screenshot --url="http://localhost:3000"                    # Auto-saves to /tmp/screenshot-xxxx.png
+fuel browser:screenshot --url="http://localhost:3000"                    # Auto-saves to /tmp/screenshot-xxxx.png (default)
 fuel browser:screenshot --url="http://localhost:3000" /tmp/shot.png      # Custom path
 fuel browser:screenshot --url="http://localhost:3000" --base64           # Get base64 data URI
 ```
@@ -174,7 +174,7 @@ Options:
 - `--width=1280` - Viewport width (only with --url)
 - `--height=720` - Viewport height (only with --url)
 - `--dark` - Use dark color scheme (only with --url)
-- `--base64` - Return base64 data URI instead of saving to file
+- `--base64` - Return base64 data URI instead of saving to file (default behavior saves to a temp file and returns its path)
 - `--path=` - Alternative to positional path argument
 
 ### Wait for Condition

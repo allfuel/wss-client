@@ -4,3 +4,4 @@
 !.fuel/plans/
 !.fuel/prompts/
 .fuel/prompts/*.new
+.fuel/.last_init_version
