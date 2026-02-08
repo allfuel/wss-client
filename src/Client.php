@@ -250,6 +250,10 @@ final class Client
 
         $this->handlePing($now);
 
+        if ($this->stream === null) {
+            return;
+        }
+
         $data = stream_get_contents($this->stream);
         if ($data === false) {
             $this->handleDisconnect(new RuntimeException('Failed to read from socket.'), $now);
@@ -269,9 +273,13 @@ final class Client
             }
 
             $this->handleFrame($frame['opcode'], $frame['payload']);
+
+            if ($this->stream === null) {
+                return;
+            }
         }
 
-        if (feof($this->stream)) {
+        if ($this->stream !== null && feof($this->stream)) {
             $this->handleDisconnect(null, $now);
         }
     }
