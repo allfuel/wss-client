@@ -5,6 +5,41 @@ declare(strict_types=1);
 use Fuel\Wss\Client;
 use Fuel\Wss\ClientConfig;
 
+it('responds to pusher:ping with pusher:pong', function (): void {
+    $client = new Client(new ClientConfig(
+        host: 'example.com',
+        port: 443,
+        useTls: true,
+        appKey: 'app-key',
+        autoReconnect: false,
+    ));
+
+    $stream = fopen('php://temp', 'r+');
+    expect($stream)->not->toBeFalse();
+
+    // Write an unmasked server text frame containing {"event":"pusher:ping"}
+    $payload = '{"event":"pusher:ping"}';
+    $frame = chr(0x81) . chr(strlen($payload)) . $payload;
+    fwrite($stream, $frame);
+    rewind($stream);
+
+    $reflector = new ReflectionClass($client);
+    $streamProperty = $reflector->getProperty('stream');
+    $streamProperty->setValue($client, $stream);
+
+    $lastPingProperty = $reflector->getProperty('lastPingAt');
+    $lastPingProperty->setValue($client, microtime(true));
+
+    $client->tick();
+
+    // Read what the client wrote back to the stream
+    rewind($stream);
+    $written = stream_get_contents($stream);
+
+    // The response should contain a pusher:pong event
+    expect($written)->toContain('pusher:pong');
+});
+
 it('handles a close frame without reading feof on a null stream', function (): void {
     $client = new Client(new ClientConfig(
         host: 'example.com',

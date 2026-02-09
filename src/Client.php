@@ -411,6 +411,10 @@ final class Client
             $data = $this->decodeJsonString($data);
         }
 
+        if ($event === 'pusher:ping') {
+            $this->sendPusherEvent('pusher:pong', []);
+        }
+
         if ($event === 'pusher:connection_established' && is_array($data)) {
             $socketId = $data['socket_id'] ?? null;
             if (is_string($socketId) && $socketId !== '') {
