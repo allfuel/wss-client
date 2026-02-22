@@ -279,7 +279,7 @@ final class Client
             }
         }
 
-        if ($this->stream !== null && feof($this->stream)) {
+        if ($this->stream !== null && $data === '' && feof($this->stream)) {
             $this->handleDisconnect(null, $now);
         }
     }

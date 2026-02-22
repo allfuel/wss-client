@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Fuel\Wss\Client;
 use Fuel\Wss\ClientConfig;
+use Fuel\Wss\WebSocket\Parser;
 
 it('responds to pusher:ping with pusher:pong', function (): void {
     $client = new Client(new ClientConfig(
@@ -19,7 +20,7 @@ it('responds to pusher:ping with pusher:pong', function (): void {
 
     // Write an unmasked server text frame containing {"event":"pusher:ping"}
     $payload = '{"event":"pusher:ping"}';
-    $frame = chr(0x81) . chr(strlen($payload)) . $payload;
+    $frame = chr(0x81).chr(strlen($payload)).$payload;
     fwrite($stream, $frame);
     rewind($stream);
 
@@ -35,9 +36,13 @@ it('responds to pusher:ping with pusher:pong', function (): void {
     // Read what the client wrote back to the stream
     rewind($stream);
     $written = stream_get_contents($stream);
+    $parser = new Parser;
+    $parser->append($written);
+    $frames = $parser->parse();
+    $pongFrames = array_filter($frames, static fn (array $frame): bool => str_contains($frame['payload'], 'pusher:pong'));
 
     // The response should contain a pusher:pong event
-    expect($written)->toContain('pusher:pong');
+    expect($pongFrames)->not->toBeEmpty();
 });
 
 it('handles a close frame without reading feof on a null stream', function (): void {
