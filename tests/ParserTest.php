@@ -17,10 +17,14 @@ it('decodes masked text frames across payload sizes', function (string $payload)
     expect($frames[0]['masked'])->toBeTrue();
     expect($frames[0]['payload'])->toBe($payload);
 })->with([
-    'empty' => '',
-    'small' => 'hello',
-    'medium' => str_repeat('b', 1024),
-    'large' => str_repeat('c', 1024 * 1024),
+    'empty (0 bytes)' => '',
+    '1 byte' => 'x',
+    '4 bytes' => 'abcd',
+    '125 bytes' => str_repeat('a', 125),
+    '126 bytes' => str_repeat('b', 126),
+    '65535 bytes' => str_repeat('c', 65535),
+    '65536 bytes' => str_repeat('d', 65536),
+    '1 MB' => str_repeat('e', 1024 * 1024),
 ]);
 
 it('throws when the buffer exceeds the max size', function (): void {
