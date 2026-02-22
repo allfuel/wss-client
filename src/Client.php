@@ -228,13 +228,15 @@ final class Client
             throw new InvalidArgumentException('Client events must target private or presence channels.');
         }
 
-        $data = [
+        $innerJson = json_encode($payload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
+        unset($payload);
+
+        $json = json_encode([
             'event' => $eventName,
             'channel' => $channel,
-            'data' => json_encode($payload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES),
-        ];
-
-        $json = json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
+            'data' => $innerJson,
+        ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
+        unset($innerJson);
         $this->sendText($json);
     }
 
