@@ -1,210 +1,180 @@
 ---
 name: fuel-create-plan
-description: Create a detailed implementation plan for new features. Use when building something across multiple files/tasks, designing implementations, entering plan mode, exiting plan mode, or when explicitly requested. This must be used when planning.
+description: Create a fuel epic and detailed implementation plan for new functionality. Use when the user wants to plan something, or they're building something across multiple files/tasks, designing implementations, entering plan mode, exiting plan mode, or when explicitly requested. This must be used when planning.
 ---
 
 # Create Plan
 
-Design implementations with full codebase context before breaking into tasks.
+Design implementation with real codebase context before breaking work into tasks.
+Critical: Do NOT start implementing. Goal here: create epic + write plan file in `.fuel/plans/*.md`.
 
 ## When to Use
 
-Invoke this skill when:
-- Entering plan mode for a new feature
-- Creating an epic or spec
-- Designing an implementation approach
-- You need architectural context before planning
-- Requirements are unclear and you need to interview the user
+Use this skill when:
+- Entering plan mode for new feature/workstream
+- Creating an epic/spec
+- Designing implementation approach before coding
+- Requirements are unclear and need interview/clarification
 
-**After plan approval**, use the `fuel-make-plan-actionable` skill to convert to tasks.
+## Mode Split (Read First)
+
+**If `--selfguided`: stop after plan + plan commit. Do not create actionable tasks.**
+
+Fuel auto-creates one implementation task (`Implement: <epic title>`, type `selfguided`) when the selfguided epic is created. That task loops against `- [ ]` acceptance criteria checkboxes in the plan until all are checked.
+
+**Hard rule:** Never run `fuel-make-plan-actionable` for selfguided epics.
+
+| Mode | Task creation | Execution model | After plan approval |
+|------|---------------|-----------------|---------------------|
+| `selfguided` | No manual task breakdown | Single auto-created implementation task iterates by acceptance checkboxes | Unpause epic |
+| `parallel` | Convert plan into tasks | Multiple independent tasks + dependencies | Run `fuel-make-plan-actionable`, then unpause |
 
 ## Workflow
 
-### 0. Interview (Optional)
+### 0. Interview
 
-If the user's request is unclear or missing key details, use the AskUserQuestion tool to gather requirements. Ask about:
+If request is unclear or missing details, ask focused questions (1-4 per round):
+- Goal
+- Scope (in/out)
+- User impact
+- Constraints (perf, compatibility, deadline)
+- Integration points
+- Success criteria
 
-- **Goal** - What should this feature achieve? What problem does it solve?
-- **Scope** - What's in scope vs out of scope? What's the MVP?
-- **User Impact** - Who uses this? What's their workflow?
-- **Constraints** - Performance requirements, compatibility needs, deadlines?
-- **Integration** - What existing features/services does this interact with?
-- **Success Criteria** - How will we know this is complete and working?
-
-Keep questions focused and specific. Aim for 1-4 questions per round. Use the gathered answers to inform your planning.
-
-
-### critical: 0.5 Ask if the user wants selfguided or parallel
-
-This determines whether we pass `--selfguided` to `epic:add`, which changes the epic plan and execution approach massively.
-
-### 1. Read Reality for Context
-
-Start by understanding the codebase architecture:
+### 1. Read Reality
 
 ```bash
 cat .fuel/reality.md
 ```
 
-Look for:
-- **Architecture** - Overall structure, patterns in use
-- **Modules** - Where related functionality lives
-- **Entry Points** - Where to hook new features
-- **Patterns** - Conventions to follow
-- **Recent Changes** - Related work that might inform design
+Look for architecture, modules, entry points, conventions, recent changes.
 
 ### 2. Explore Related Code
 
-Use reality.md to identify relevant files, then explore:
-- Similar implementations to follow as patterns
-- Interfaces your feature should implement
-- Tests that show expected behavior
+Find existing patterns, interfaces, and tests to mirror.
 
 ### 3. Design the Solution
 
-Write a clear plan that includes:
-- **Goal** - What the feature achieves and why
-- **Approach** - How you'll implement it
-- **Files to modify** - Specific paths
-- **New files needed** - With proposed locations
-- **Edge cases** - Errors, validation, boundaries
-- **Testing strategy** - How to verify it works
-- For complex interactions, ASCII diagrams can help (architecture, flow charts, sequence diagrams)
+Plan must include:
+- Goal
+- Approach
+- Files to modify
+- New files
+- Edge cases/validation
+- Testing strategy
+- Acceptance criteria (machine-verifiable)
+- Smoketesting approach
 
-### 4. Create Epic (if multi-task)
+If dev services needed (vite/server/workers), consider defining `.fuel/run.yml` entries.
 
-For features requiring multiple tasks:
+### 4. Create Epic
+
+Use `--selfguided` only when selfguided chosen:
 
 ```bash
 fuel epic:add "Feature name" --description="What and why" [--selfguided]
 ```
 
-Note the epic ID (e.g., `e-abc123`). A plan file is auto-created at `.fuel/plans/{title-kebab}-{epic-id}.md`.
+Capture epic ID (example: `e-abc123`). Plan file auto-created at `.fuel/plans/{title-kebab}-{epic-id}.md`.
 
-**Epics start paused** - tasks won't be consumed until you run `fuel unpause e-abc123`. This gives you time to add all tasks and dependencies before execution begins.
+Epics start paused. Unpause only after planning flow for selected mode is ready.
 
-### 5. Execution Mode Choice
+### 5. Choose Execution Mode
 
-After creating the epic, ask the user how they want it executed:
+State choice + short reason. User can override.
 
-**Parallel (default)**: Use fuel-make-plan-actionable skill to break into tasks.
-- Best when: Requirements are clear, tasks are independent, want faster execution
-- Allows cheaper models on simpler tasks
-- Tasks run concurrently
+Prefer `selfguided` when:
+- Exploratory/research-heavy
+- Tightly coupled file touches
+- Iterative tuning/verification required
+- Hard to split into independent tasks
 
-**Self-guided**: Add --selfguided flag to epic:add or epic:update
-- Best when: Exploratory work, requirements may evolve, need to learn as you go
-- Single task iterates until all acceptance criteria met
-- Always uses capable model (more expensive)
-- Cannot parallelize
+Prefer `parallel` when:
+- Requirements clear
+- Work splits into independent units
+- Minimal interdependency
+- Units verifiable independently
 
-Examples:
-```bash
-# Create epic with selfguided from start
-fuel epic:add 'Feature' --selfguided --description='Criteria: 1)... 2)...'
-
-# Enable selfguided on existing epic
-fuel epic:update e-xxxx --selfguided
-
-# Disable selfguided on existing epic
-fuel epic:update e-xxxx --no-selfguided
-```
+Hard rule: if you cannot define 3+ independent tasks with clean boundaries and low file overlap, choose selfguided.
 
 ### 6. Document the Plan
 
-Write your plan to the epic's plan file. **Use the template matching your execution mode:**
+Write plan into epic plan file. Merge with pre-existing template sections.
 
-#### Parallel Mode (default)
+For selfguided, explicit checkbox criteria is mandatory. Without `- [ ]` criteria, agent may try one pass instead of iterative loop.
 
-```markdown
-# Epic: Feature Name (e-abc123)
+Each criterion should be:
+- Specific/testable
+- Independent
+- Measurable pass/fail
 
-## Plan
-[Your detailed implementation approach]
+Selfguided loop behavior to make explicit in plan:
+1. Execute implementation work for current criteria.
+2. Mark completed criteria checkboxes.
+3. Continue iterating until all criteria are checked.
 
-## Implementation Notes
-<!-- Tasks update this as they work -->
+### 7. Commit Plan File
 
-## Interfaces Created
-<!-- Tasks add interfaces/contracts they create -->
+```bash
+git add .fuel/plans/{epic-title-kebab}-{epic-id}.md
+git commit -m "plan: {epic title}"
 ```
 
-#### Self-Guided Mode
+### 8. Exit Plan Mode and Execute
 
-```markdown
-# Epic: Feature Name (e-abc123)
+After approval:
 
-## Plan
-[Your detailed implementation approach]
+Selfguided:
+1. Unpause epic.
+2. Let single selfguided implementation task iterate against acceptance checkboxes.
+3. Do not run `fuel-make-plan-actionable`.
 
-## Acceptance Criteria
-- [ ] Criterion 1: specific, testable requirement
-- [ ] Criterion 2: specific, testable requirement
-- [ ] Criterion 3: specific, testable requirement
-
-## Progress Log
-<!-- Agent logs iteration progress here -->
-
-## Implementation Notes
-<!-- Agent documents decisions and discoveries -->
-```
-
-**CRITICAL for self-guided mode:** Without explicit `- [ ]` checkbox criteria, the agent will complete everything in one pass instead of iterating. Each criterion should be:
-- Specific and testable (not vague like "make it work")
-- Independent (can be verified separately)
-- Measurable (clear pass/fail state)
-
-**Commit the plan file** - `.fuel/plans/` is tracked in git.
-
-### 7. Exit Plan Mode
-
-Once your plan is complete, exit plan mode for approval. After approval, use the `fuel-make-plan-actionable` skill to convert the plan into tasks.
+Parallel:
+1. Run `fuel-make-plan-actionable`.
+2. Unpause epic.
 
 ## When Reality Doesn't Exist
 
-If `.fuel/reality.md` is a stub or empty:
-- Explore the codebase manually
-- Focus on similar existing features
-- Document what you learn in your plan for future reference
-
-After the first epic completes, reality.md will be populated.
+If `.fuel/reality.md` is empty/stub:
+- Explore code manually
+- Follow similar features
+- Document findings in plan
 
 ## Example Planning Session
 
-### Example 1: Clear Requirements
-1. User asks: "Add user notification preferences"
-2. Read `.fuel/reality.md` - find existing UserPreference model, NotificationService
-3. Explore `app/Services/NotificationService.php` - understand current flow
-4. Design: extend UserPreference model, add preference check to NotificationService
-5. Create epic: `fuel epic:add "User notification preferences"`
-6. Write plan to `.fuel/plans/user-notification-preferences-e-xxxx.md`
-7. Exit plan mode, await approval
-8. On approval, invoke `fuel-make-plan-actionable` to create tasks
+### Example 1: Parallel
+1. User asks: add notification preferences.
+2. Read reality + related service/model/test files.
+3. Choose parallel: clear separable units.
+4. Create epic (no `--selfguided`).
+5. Write + commit plan.
+6. After approval: run `fuel-make-plan-actionable`, then unpause.
 
-### Example 2: Unclear Requirements (Interview First)
-1. User asks: "Make the app faster"
-2. Interview: Ask questions to clarify scope
-   - "Which part of the app feels slow? API responses, page loads, or background jobs?"
-   - "What's the current performance baseline and target?"
-   - "Are there specific user workflows affected?"
-3. User responds: "API responses take 2-3 seconds, target is <500ms, affects dashboard load"
-4. Read `.fuel/reality.md` - find API architecture, caching strategy
-5. Profile: Explore dashboard API endpoints, check for N+1 queries
-6. Design: add query optimization, implement response caching, add indexes
-7. Create epic: `fuel epic:add "Optimize dashboard API performance"`
-8. Write plan to `.fuel/plans/optimize-dashboard-api-performance-e-xxxx.md`
-9. Exit plan mode, await approval
-10. On approval, invoke `fuel-make-plan-actionable` to create tasks
+### Example 2: Selfguided Checkbox Loop
+1. User asks: make dashboard API faster.
+2. Interview to define baseline/target (`<500ms`).
+3. Choose selfguided: exploratory profiling + iterative tuning.
+4. Create epic: `fuel epic:add "Optimize dashboard API performance" --selfguided`
+5. Write plan with explicit criteria:
+   - `- [ ] Dashboard API p95 latency <500ms in benchmark`
+   - `- [ ] N+1 query removed on dashboard endpoint`
+   - `- [ ] Cache hit rate >80% in smoke test`
+6. Commit plan.
+7. After approval: unpause epic.
+8. Selfguided implementation task loops until all checkboxes are checked.
+9. Do not run `fuel-make-plan-actionable`.
 
-## Next: Convert to Tasks
+## Parallel Mode Only: Convert to Tasks
 
-Once your plan is approved, use the **fuel-make-plan-actionable** skill to:
-- Break the plan into individual tasks with `fuel add --epic=e-xxxx`
-- Set proper complexity and dependencies
-- Create a mandatory review task
-- **Unpause the epic** with `fuel unpause e-xxxx` to start execution
+Never run this for selfguided epics.
 
-The two skills form a complete workflow:
-1. **fuel-create-plan** → Design with context
-2. **fuel-make-plan-actionable** → Convert to executable tasks
-3. **fuel unpause** → Start execution once all tasks are ready
+Once parallel plan is approved, use `fuel-make-plan-actionable` to:
+- Generate task JSON and import via `fuel add:json e-xxxx /path/tasks.json`
+- Set dependencies and complexity correctly
+- Create mandatory review task
+- Unpause epic after task graph is ready
+
+Workflow summary:
+1. `fuel-create-plan` -> design with context
+2. `fuel-make-plan-actionable` -> parallel task graph only
+3. `fuel unpause` -> start execution

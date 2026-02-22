@@ -20,6 +20,7 @@ emitter.
 - `src/Client.php` exposes the primary `Client` API for consumers.
 - `examples/*.php` scripts demonstrate typical usage and are runnable via `php`.
 - `composer.json` scripts expose `pint`, `phpstan`, `test`, and `rector` workflows.
+- `.fuel/quality-gate` runs all quality checks (pint → phpstan → pest) in sequence; use before committing.
 
 ## Patterns
 - `declare(strict_types=1)` and `final` classes with typed properties and explicit validation.
@@ -37,3 +38,6 @@ emitter.
 | Rector | `vendor/bin/rector process --dry-run` | Refactor/quality checks (dry-run) |
 
 ## Recent Changes
+- 2026-02-22: Added `.fuel/quality-gate` executable script (pint → phpstan → pest)
+
+_Last updated: 2026-02-22 by UpdateReality_

@@ -14,15 +14,17 @@ fuel browser:goto page1 "http://localhost:3000"  # Navigate
 fuel browser:snapshot page1 -i                   # Get interactive elements with refs
 fuel browser:click page1 @e1                     # Click by ref
 fuel browser:fill page1 @e2 "text"               # Fill by ref
+fuel browser:refresh page1                       # Reload after code changes
+fuel browser:rescreenshot page1                  # Refresh + screenshot in one
 fuel browser:close ctx                           # Cleanup
 ```
 
 ## Quick Screenshot
 
-Take a screenshot of any URL in one command - no setup needed. Saves to `/tmp` by default:
+Take a screenshot of any URL in one command - no setup needed. Saves to `.fuel/context/browser/screenshots/` by default:
 
 ```bash
-fuel browser:screenshot --url="http://localhost:3000"                    # Auto-saves to /tmp/screenshot-xxxx.png (default)
+fuel browser:screenshot --url="http://localhost:3000"                    # Auto-saves to .fuel/context/browser/screenshots/screenshot-xxxx.png (default)
 fuel browser:screenshot --url="http://localhost:3000" /tmp/shot.png      # Custom path
 fuel browser:screenshot --url="http://localhost:3000" --base64           # Get base64 data URI
 ```
@@ -56,6 +58,16 @@ Options:
 - `--wait-until=load|domcontentloaded|networkidle` - Wait condition (use `networkidle` for SPAs)
 - `--timeout=30000` - Navigation timeout (ms)
 - `--html` - Return rendered HTML/DOM after navigation
+
+### Refresh Page
+```bash
+fuel browser:refresh <page_id>
+```
+Reload the current page. Useful after code changes to see updated output.
+
+Options:
+- `--wait-until=load|domcontentloaded|networkidle` - Wait condition (default: load)
+- `--timeout=30000` - Reload timeout (ms)
 
 ### Accessibility Snapshot
 ```bash
@@ -150,7 +162,7 @@ fuel browser:html page1 "div.content"
 
 ### Take Screenshot
 ```bash
-# Quick screenshot (recommended) - saves to /tmp with random filename
+# Quick screenshot (recommended) - saves to .fuel/context/browser/screenshots with random filename
 fuel browser:screenshot --url=<url>
 
 # Specify output path
@@ -176,6 +188,20 @@ Options:
 - `--dark` - Use dark color scheme (only with --url)
 - `--base64` - Return base64 data URI instead of saving to file (default behavior saves to a temp file and returns its path)
 - `--path=` - Alternative to positional path argument
+
+### Re-screenshot Page (Refresh + Screenshot)
+```bash
+fuel browser:rescreenshot <page_id>
+fuel browser:rescreenshot <page_id> /path/to/file.png
+fuel browser:rescreenshot <page_id> --base64
+```
+Refreshes the page (networkidle), waits for CSS animations to complete, then takes a screenshot. Ideal after code changes.
+
+Options:
+- `--format=png` - Image format: png or jpeg
+- `--quality=80` - JPEG quality 1-100
+- `--full-page` - Capture entire scrollable page
+- `--base64` - Return base64 data URI
 
 ### Wait for Condition
 ```bash
@@ -247,6 +273,8 @@ fuel browser:run page1 "return await page.locator('.item').count()"
 
 ### Additional Commands
 ```bash
+fuel browser:refresh <page_id>             # Reload page after code changes
+fuel browser:rescreenshot <page_id>        # Refresh + wait + screenshot in one
 fuel browser:page <context_id> <page_id>  # Create additional page/tab
 fuel browser:close <context_id>            # Close context and all pages
 fuel browser:status                        # Check daemon status
@@ -272,9 +300,9 @@ fuel browser:close test
 ## Example: Visual Testing
 
 ```bash
-fuel browser:screenshot --url="http://localhost:3000" /tmp/desktop.png --width=1920 --height=1080
-fuel browser:screenshot --url="http://localhost:3000" /tmp/mobile.png --width=375 --height=812
-fuel browser:screenshot --url="http://localhost:3000" /tmp/dark.png --dark
+fuel browser:screenshot --url="http://localhost:3000" .fuel/context/browser/screenshots/desktop.png --width=1920 --height=1080
+fuel browser:screenshot --url="http://localhost:3000" .fuel/context/browser/screenshots/mobile.png --width=375 --height=812
+fuel browser:screenshot --url="http://localhost:3000" .fuel/context/browser/screenshots/dark.png --dark
 ```
 
 ## Example: SPA Testing
@@ -298,3 +326,5 @@ fuel browser:close spa
 3. **Use `--wait-until=networkidle`** for SPAs
 4. **Use `browser:wait`** after actions that trigger async updates
 5. **Re-snapshot after navigation** - refs become invalid after page changes
+6. **Use `browser:rescreenshot`** after code changes - refreshes, waits for animations, and screenshots in one command
+7. **Screenshots auto-wait for CSS animations** - no need for manual delays, `document.getAnimations()` is checked automatically

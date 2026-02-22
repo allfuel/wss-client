@@ -1,4 +1,4 @@
-<fuel-prompt version="2" />
+<fuel-prompt version="6" />
 
 # Merge Epic: {{epic.title}}
 
@@ -24,6 +24,14 @@ Read the epic plan to understand what was built:
 - **Plan file:** .fuel/plans/{{epic.plan_file}}
 
 Understanding the epic's intent is critical for intelligent conflict resolution.
+
+Ensure the Fuel epic plan file is committed and pushed as part of this merge.
+Explicitly verify both copies and keep the best final version:
+- Main copy: `{{project.path}}/.fuel/plans/{{epic.plan_file}}`
+- Mirror copy: `{{mirror.path}}/.fuel/plans/{{epic.plan_file}}`
+- If one copy is newer and more complete, use it.
+- If each copy has unique useful detail, merge both into one final plan file in main.
+- Stage, commit, and push the final `.fuel/plans/{{epic.plan_file}}` update.
 
 ## Step 2: Fetch the Epic Branch
 
@@ -76,14 +84,25 @@ Sanity checks:
 - Do all tests pass?
 - Is the code formatted correctly?
 
+## Step 7: Push Changes
+
+Push the merged changes to remote:
+```bash
+git push
+```
+
 ## FORBIDDEN
 
-**DO NOT run fuel commands.** You are NOT working on tasks, you are merging completed work.
+**DO NOT run normal fuel workflow commands.** You are NOT working on tasks, you are merging completed work.
 
 Specifically, do NOT run:
-- `fuel start`, `fuel done`, `fuel add`
+- `fuel start`, `fuel done` (merge task lifecycle is managed automatically)
 - `fuel status`, `fuel board`, `fuel tree`
-- Any other fuel commands
+
+**EXCEPTION: Blocked Path Reporting**
+If the merge cannot proceed (e.g., complex conflicts requiring human judgement, permission issues, external dependencies):
+1. Create a needs-human task: `fuel add "Description of blocker" --labels=needs-human --description="Detailed context"`
+2. Exit with non-zero status to signal failure
 
 FORBIDDEN: `git commit --no-verify`, `git commit -n`
 
@@ -95,9 +114,20 @@ The merge is complete when:
 1. The epic's branch is merged into the main branch (current branch)
 2. All conflicts are resolved
 3. All quality gates pass
-4. The code is committed
+4. The most up-to-date/detailed epic plan file is present in main and committed
+5. The code is committed
+6. Changes are pushed to remote
 
-When done, simply exit. The system will handle cleanup.
+## Exit Behavior
+
+**Success:** When all success criteria pass, exit with status 0. The system will verify merge/push invariants and mark the task complete.
+
+**Blocked/Failure:** If you cannot complete the merge (complex conflicts, external blockers, quality gates fail persistently):
+1. Create a needs-human task documenting the blocker
+2. Exit with non-zero status to signal failure
+3. Do NOT mark the task done yourself
+
+**Note on Local Changes:** Unrelated local dirty-tree changes (from other work) do not alone constitute failure. If the merge and push succeed despite unrelated modified files, that is acceptable.
 
 ## Working Directory
 

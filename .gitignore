@@ -5,3 +5,12 @@
 !.fuel/prompts/
 .fuel/prompts/*.new
 .fuel/.last_init_version
+!.fuel/plans/**
+!.fuel/docs/
+!.fuel/docs/**
+.fuel/quality-gate.pending
+.fuel/context/
+.fuel/logs/
+!.fuel/setup.sh
+!.fuel/teardown.sh
+!.fuel/run.yml
