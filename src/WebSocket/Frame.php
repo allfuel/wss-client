@@ -59,11 +59,8 @@ final class Frame
         }
 
         $maskingKey = random_bytes(4);
-        $maskedPayload = '';
-
-        for ($i = 0; $i < $length; $i++) {
-            $maskedPayload .= $payload[$i] ^ $maskingKey[$i % 4];
-        }
+        $mask = substr(str_repeat($maskingKey, intdiv($length + 3, 4)), 0, $length);
+        $maskedPayload = $payload ^ $mask;
 
         return $header.$maskingKey.$maskedPayload;
     }
