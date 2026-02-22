@@ -73,11 +73,8 @@ final class Parser
             $offset += $length;
 
             if ($masked) {
-                $unmasked = '';
-                for ($i = 0; $i < $length; $i++) {
-                    $unmasked .= $payload[$i] ^ $mask[$i % 4];
-                }
-                $payload = $unmasked;
+                $expandedMask = substr(str_repeat($mask, intdiv($length + 3, 4)), 0, $length);
+                $payload = $payload ^ $expandedMask;
             }
 
             $frames[] = [
