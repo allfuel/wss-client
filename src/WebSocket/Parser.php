@@ -6,12 +6,20 @@ namespace Fuel\Wss\WebSocket;
 
 final class Parser
 {
+    public const MAX_BUFFER_SIZE = 16 * 1024 * 1024;
+
     private string $buffer = '';
 
     public function append(string $data): void
     {
         if ($data === '') {
             return;
+        }
+
+        if (strlen($this->buffer) + strlen($data) > self::MAX_BUFFER_SIZE) {
+            throw new \OverflowException(
+                sprintf('WebSocket read buffer exceeded %d bytes', self::MAX_BUFFER_SIZE)
+            );
         }
 
         $this->buffer .= $data;
@@ -73,11 +81,8 @@ final class Parser
             $offset += $length;
 
             if ($masked) {
-                $unmasked = '';
-                for ($i = 0; $i < $length; $i++) {
-                    $unmasked .= $payload[$i] ^ $mask[$i % 4];
-                }
-                $payload = $unmasked;
+                $expandedMask = substr(str_repeat($mask, intdiv($length + 3, 4)), 0, $length);
+                $payload = $payload ^ $expandedMask;
             }
 
             $frames[] = [
