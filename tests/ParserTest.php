@@ -22,3 +22,18 @@ it('decodes masked text frames across payload sizes', function (string $payload)
     'medium' => str_repeat('b', 1024),
     'large' => str_repeat('c', 1024 * 1024),
 ]);
+
+it('throws when the buffer exceeds the max size', function (): void {
+    $parser = new Parser;
+    $parser->append(str_repeat('a', Parser::MAX_BUFFER_SIZE));
+
+    expect(fn () => $parser->append('b'))
+        ->toThrow(OverflowException::class, sprintf('WebSocket read buffer exceeded %d bytes', Parser::MAX_BUFFER_SIZE));
+});
+
+it('allows normal-sized appends', function (): void {
+    $parser = new Parser;
+
+    expect(fn () => $parser->append(str_repeat('a', 1024)))
+        ->not->toThrow(OverflowException::class);
+});

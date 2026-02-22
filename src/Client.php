@@ -264,7 +264,13 @@ final class Client
         }
 
         if ($data !== '') {
-            $this->parser->append($data);
+            try {
+                $this->parser->append($data);
+            } catch (\OverflowException $error) {
+                $this->handleDisconnect($error, $now);
+
+                return;
+            }
         }
 
         foreach ($this->parser->parse() as $frame) {
