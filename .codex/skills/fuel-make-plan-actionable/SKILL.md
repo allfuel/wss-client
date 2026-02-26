@@ -139,7 +139,7 @@ Create a `tasks.json` file in a temporary directory with all tasks. This is the 
 | `labels` | No | Array of strings |
 | `blockedBy` | No | Array of local IDs (`T1`) or external Fuel IDs (`f-abc123`) |
 
-**Always set `complexity` for every task.** Fuel routes work by complexity; correct complexity enables cheaper/faster agents on `trivial`/`simple` tasks.
+**Always set `complexity` for every task.** Fuel routes work by complexity; correct complexity enables cheaper/faster agents on `trivial`/`simple` tasks. When a task could split into a `simple` + `trivial` task instead of one `moderate`, prefer the split — cheaper agents handle the pieces faster.
 
 ### 5. JSON Structure Rules
 

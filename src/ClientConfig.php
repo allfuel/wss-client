@@ -42,6 +42,10 @@ final class ClientConfig
 
     public readonly float $maxReconnectIntervalSeconds;
 
+    public readonly float $writeStallTimeoutSeconds;
+
+    public readonly float $writePollIntervalSeconds;
+
     public function __construct(
         string $host,
         int $port,
@@ -56,7 +60,9 @@ final class ClientConfig
         ?string $subprotocol = null,
         bool $autoReconnect = true,
         float $reconnectIntervalSeconds = 1.0,
-        float $maxReconnectIntervalSeconds = 30.0
+        float $maxReconnectIntervalSeconds = 30.0,
+        float $writeStallTimeoutSeconds = 5.0,
+        float $writePollIntervalSeconds = 0.05
     ) {
         if ($host === '') {
             throw new InvalidArgumentException('Host must not be empty.');
@@ -107,6 +113,14 @@ final class ClientConfig
             throw new InvalidArgumentException('Max reconnect interval must be greater than or equal to reconnect interval.');
         }
 
+        if ($writeStallTimeoutSeconds <= 0.0) {
+            throw new InvalidArgumentException('Write stall timeout must be greater than zero.');
+        }
+
+        if ($writePollIntervalSeconds <= 0.0) {
+            throw new InvalidArgumentException('Write poll interval must be greater than zero.');
+        }
+
         $this->host = $host;
         $this->port = $port;
         $this->useTls = $useTls;
@@ -121,5 +135,7 @@ final class ClientConfig
         $this->autoReconnect = $autoReconnect;
         $this->reconnectIntervalSeconds = $reconnectIntervalSeconds;
         $this->maxReconnectIntervalSeconds = $maxReconnectIntervalSeconds;
+        $this->writeStallTimeoutSeconds = $writeStallTimeoutSeconds;
+        $this->writePollIntervalSeconds = $writePollIntervalSeconds;
     }
 }

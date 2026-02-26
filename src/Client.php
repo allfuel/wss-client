@@ -258,7 +258,11 @@ final class Client
 
         $data = stream_get_contents($this->stream);
         if ($data === false) {
-            $this->handleDisconnect(new RuntimeException('Failed to read from socket.'), $now);
+            $this->handleDisconnect(
+                new RuntimeException('Failed to read from socket.'),
+                $now,
+                source: 'read_error'
+            );
 
             return;
         }
@@ -267,7 +271,7 @@ final class Client
             try {
                 $this->parser->append($data);
             } catch (\OverflowException $error) {
-                $this->handleDisconnect($error, $now);
+                $this->handleDisconnect($error, $now, source: 'read_overflow');
 
                 return;
             }
@@ -288,7 +292,7 @@ final class Client
         }
 
         if ($this->stream !== null && $data === '' && feof($this->stream)) {
-            $this->handleDisconnect(null, $now);
+            $this->handleDisconnect(null, $now, source: 'eof');
         }
     }
 
@@ -311,7 +315,7 @@ final class Client
             return;
         }
 
-        $this->handleDisconnect(null, microtime(true));
+        $this->handleDisconnect(null, microtime(true), source: 'local_close');
     }
 
     private function handlePing(float $now): void
@@ -342,11 +346,18 @@ final class Client
                 $this->emitter->emit('pong', $payload);
                 break;
             case Frame::OPCODE_CLOSE:
+                ['code' => $closeCode, 'reason' => $closeReason] = $this->parseClosePayload($payload);
                 if (! $this->closing) {
                     $this->closing = true;
                     $this->send(Frame::encodeClose());
                 }
-                $this->handleDisconnect(null, microtime(true));
+                $this->handleDisconnect(
+                    null,
+                    microtime(true),
+                    source: 'remote_close_frame',
+                    closeCode: $closeCode,
+                    closeReason: $closeReason
+                );
                 break;
             default:
                 $this->emitter->emit('error', new RuntimeException('Unhandled opcode received.'));
@@ -369,7 +380,11 @@ final class Client
         while ($totalWritten < $length) {
             $written = @fwrite($this->stream, substr($frame, $totalWritten));
             if ($written === false) {
-                $this->handleDisconnect(new RuntimeException('Failed to write to socket.'), microtime(true));
+                $this->handleDisconnect(
+                    new RuntimeException('Failed to write to socket.'),
+                    microtime(true),
+                    source: 'write_error'
+                );
 
                 return;
             }
@@ -381,14 +396,19 @@ final class Client
                             $this->config->writeStallTimeoutSeconds,
                             $length
                         )),
-                        microtime(true)
+                        microtime(true),
+                        source: 'write_stall'
                     );
 
                     return;
                 }
 
                 if (! is_resource($this->stream)) {
-                    $this->handleDisconnect(new RuntimeException('Socket closed while writing.'), microtime(true));
+                    $this->handleDisconnect(
+                        new RuntimeException('Socket closed while writing.'),
+                        microtime(true),
+                        source: 'write_stream_closed'
+                    );
 
                     return;
                 }
@@ -532,8 +552,13 @@ final class Client
         }
     }
 
-    private function handleDisconnect(?\Throwable $error, float $now): void
-    {
+    private function handleDisconnect(
+        ?\Throwable $error,
+        float $now,
+        ?string $source = null,
+        ?int $closeCode = null,
+        ?string $closeReason = null
+    ): void {
         if ($this->stream === null) {
             if ($error !== null) {
                 $this->emitter->emit('error', $error);
@@ -546,17 +571,50 @@ final class Client
             $this->emitter->emit('error', $error);
         }
 
+        $socketId = $this->socketId;
         fclose($this->stream);
         $this->stream = null;
 
         $this->closing = false;
         $this->socketId = null;
         $this->presenceStates = [];
+        $this->emitter->emit('close_meta', [
+            'source' => $source,
+            'socket_id' => $socketId,
+            'close_code' => $closeCode,
+            'close_reason' => $closeReason,
+            'error' => $error?->getMessage(),
+            'at' => $now,
+        ]);
         $this->emitter->emit('close');
 
         if ($this->allowReconnect && $this->config->autoReconnect) {
             $this->scheduleReconnect($now);
         }
+    }
+
+    /**
+     * @return array{code: ?int, reason: ?string}
+     */
+    private function parseClosePayload(string $payload): array
+    {
+        if (strlen($payload) < 2) {
+            return ['code' => null, 'reason' => null];
+        }
+
+        $parts = unpack('ncode', substr($payload, 0, 2));
+        $code = isset($parts['code']) ? (int) $parts['code'] : null;
+        $reasonBytes = substr($payload, 2);
+
+        if ($reasonBytes === '') {
+            return ['code' => $code, 'reason' => null];
+        }
+
+        $reason = preg_match('//u', $reasonBytes) === 1
+            ? $reasonBytes
+            : 'hex:'.bin2hex($reasonBytes);
+
+        return ['code' => $code, 'reason' => $reason];
     }
 
     private function scheduleReconnect(float $now): void

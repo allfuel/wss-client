@@ -65,6 +65,20 @@ Plan must include:
 - Acceptance criteria (machine-verifiable)
 - Smoketesting approach
 
+**Diagrams:** Use mermaid diagrams when they clarify architecture, data flow, or component relationships. A quick diagram is often clearer than three paragraphs. Good candidates:
+- Multi-service or multi-process architecture
+- Request/response flows with transformations
+- Component dependency graphs
+- State machines or lifecycle flows
+
+Example:
+```mermaid
+graph LR
+    CLI --> TaskService --> SQLite
+    TaskService --> RunService --> ProcessGroup
+    RunService --> IPCSocket
+```
+
 If dev services needed (vite/server/workers), consider defining `.fuel/run.yml` entries.
 
 ### 4. Create Epic
@@ -163,6 +177,17 @@ If `.fuel/reality.md` is empty/stub:
 7. After approval: unpause epic.
 8. Selfguided implementation task loops until all checkboxes are checked.
 9. Do not run `fuel-make-plan-actionable`.
+
+## Complexity & Cost Optimization
+
+Complexity drives model routing. Fuel assigns cheaper/faster agents to `trivial` and `simple` tasks.
+
+**When designing tasks, prefer granular over monolithic:**
+- One `moderate` task that could split into `simple` + `trivial` → split it
+- More tasks at lower complexity = less cost, faster execution
+- Only use `complex` when multiple concerns genuinely require judgement or coordination
+
+Complexity scale: `trivial` (typos/single-line) | `simple` (single file/focus) | `moderate` (multiple files) | `complex` (multiple concerns, requires judgement)
 
 ## Parallel Mode Only: Convert to Tasks
 
