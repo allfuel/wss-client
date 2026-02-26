@@ -362,8 +362,9 @@ final class Client
 
         $totalWritten = 0;
         $length = strlen($frame);
-        $attempts = 0;
-        $maxAttempts = 100;
+        $deadline = microtime(true) + $this->config->writeStallTimeoutSeconds;
+        $waitSeconds = (int) floor($this->config->writePollIntervalSeconds);
+        $waitMicroseconds = (int) (($this->config->writePollIntervalSeconds - $waitSeconds) * 1_000_000);
 
         while ($totalWritten < $length) {
             $written = @fwrite($this->stream, substr($frame, $totalWritten));
@@ -373,17 +374,48 @@ final class Client
                 return;
             }
             if ($written === 0) {
-                $attempts++;
-                if ($attempts >= $maxAttempts) {
-                    $this->handleDisconnect(new RuntimeException('Socket write stalled.'), microtime(true));
+                if (microtime(true) >= $deadline) {
+                    $this->handleDisconnect(
+                        new RuntimeException(sprintf(
+                            'Socket write stalled after %.3fs while sending %d bytes.',
+                            $this->config->writeStallTimeoutSeconds,
+                            $length
+                        )),
+                        microtime(true)
+                    );
 
                     return;
                 }
-                usleep(1000);
+
+                if (! is_resource($this->stream)) {
+                    $this->handleDisconnect(new RuntimeException('Socket closed while writing.'), microtime(true));
+
+                    return;
+                }
+
+                $meta = stream_get_meta_data($this->stream);
+                $streamType = (string) $meta['stream_type'];
+                if (str_contains($streamType, 'user-space')) {
+                    usleep(1000);
+
+                    continue;
+                }
+
+                $read = [];
+                $write = [$this->stream];
+                $except = [];
+                try {
+                    $ready = @stream_select($read, $write, $except, $waitSeconds, $waitMicroseconds);
+                } catch (\ValueError) {
+                    $ready = false;
+                }
+
+                if ($ready === false) {
+                    usleep(1000);
+                }
 
                 continue;
             }
-            $attempts = 0;
             $totalWritten += $written;
         }
     }
